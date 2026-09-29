@@ -5,25 +5,12 @@ author: "Benjamin Charlier, Adrien Mazoyer"
 date: ""
 format:
   revealjs:
-    theme: metropolis.scss
-    css: ../table.css
-    width: 1024
-    height: 768
-    slide-level: 2
-    slide-number: true
-    progress: true
-    history: false
-    toc: true
-    toc-depth: 1
-    code-line-numbers: false
-    eval: true
-    echo: true
+    output-file: ACM_slides.html
+  
+  html:
+    output-file: ACM.html
 
 bibliography: ../reference.bib
-
-knitr:
-  opts_chunk:
-    prompt: true
 ---
 
 ```{r}
@@ -568,8 +555,9 @@ Représentation du nuage des individus sur le 1er plan principal
 
 ```{r}
 #| echo: false
-#| out-width: "100%"
 #| fig-height: 8
+#| fig-width: 8
+#| out-width: "100%"
 
 library(plotly)
 
@@ -677,6 +665,7 @@ plot_activites %>%
 #| echo: false
 #| fig-width: 12
 #| fig-height: 12
+
 library(ggplot2)
 
 # 1. Extraction des noms de toutes les modalités actives

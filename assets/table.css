@@ -25,9 +25,10 @@
 }
 
 .table > thead > tr > th {
-  background: #343a40;
+  background: #8495a7;
   color: #ffffff;
   font-weight: 600;
+  text-align: center !important;
   padding: 0.3em 0.6em;
   border: none;
 }
@@ -50,32 +51,52 @@
 
 /* Shared centering for data tables to keep a uniform look across slides */
 .data-table table {
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin: auto;
   width: fit-content !important;
   max-width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: center !important;
-  font-size: 0.75em;
+  font-size: 0.68em;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .data-table th,
 .data-table td {
   text-align: center !important;
-  padding: 0.18em 0.5em;
+  padding: 0.3em 0.6em;
   line-height: 1.1;
   vertical-align: middle;
+  border: none;
 }
 
 .data-table thead th {
   vertical-align: middle;
   text-align: center !important;
+  background: #8495a7;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .data-table thead th[colspan] {
   text-align: center !important;
 }
 
+.data-table tbody tr:nth-child(even) {
+  background: #e9ecef;
+}
+
+.data-table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
 .data-table tbody td:first-child {
   font-weight: 600;
 }
+
+.data-table tbody tr:hover {
+  background: #dbeafe;
+}
+

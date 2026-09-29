@@ -407,54 +407,6 @@ $presentation-block-margin: 12px;
   }
 }
 
-/*------------------------------------*/
-/*            DATA TABLES             */
-/*------------------------------------*/
-// Frame course data tables.
-.data-table table {
-  margin: auto;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.6em;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px $metro-shadow;
-}
-
-// Style table headers.
-.data-table thead th {
-  background: $metro-table-header;
-  color: $metro-paper;
-  font-weight: $font-weight-semibold;
-  padding: 0.45em 0.8em;
-  border: none;
-}
-
-// Space table cells.
-.data-table tbody td {
-  padding: 0.4em 0.8em;
-  border: none;
-}
-
-// Shade even rows.
-.data-table tbody tr:nth-child(even) {
-  background: $metro-table-row;
-}
-
-// Keep odd rows plain.
-.data-table tbody tr:nth-child(odd) {
-  background: $metro-paper;
-}
-
-// Emphasize first-column labels.
-.data-table tbody td:first-child {
-  font-weight: $font-weight-semibold;
-}
-
-// Highlight rows on hover.
-.data-table tbody tr:hover {
-  background: $metro-table-hover;
-}
 
 /*------------------------------------*/
 /*           Figures                  */

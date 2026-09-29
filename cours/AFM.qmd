@@ -1,0 +1,1285 @@
+---
+title: "Analyse Factorielle Multiple"
+subtitle: "AFM"
+author: "Benjamin Charlier, Adrien Mazoyer"
+date: ""
+format:
+  revealjs:
+    output-file: AFM_slides.html
+  html:
+    output-file: AFM.html
+
+bibliography: ../reference.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+source("../R/functions.R")
+```
+
+# Objectifs
+
+
+## Description des données
+
+On travaille sur des tableaux de données où
+
+- les [**lignes**]{.blue} correspondent aux [**individus**]{.blue}
+- les [**colonnes**]{.orange} correspondent à des [**variables quantitatives**]{.orange} regroupées
+
+
+::: {.data-table}
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th colspan="3">Groupe 1</th>
+      <th style="min-width: 3em;">$\cdots$</th>
+      <th colspan="3">Groupe $K$</th>
+    </tr>
+    <tr>
+      <th> </th>
+      <th>var. $1$</th>
+      <th>$\cdots$</th>
+      <th>var. $J_1$</th>
+      <th>$\cdots$</th>
+      <th>var. $1$</th>
+      <th>$\cdots$</th>
+      <th>var. $J_K$</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Individu $1$</td>
+      <td>$t_{1,(1,1)}$</td>
+      <td>$\cdots$</td>
+      <td>$t_{1,(1,J_1)}$</td>
+      <td>$\cdots$</td>
+      <td>$t_{1,(K,1)}$</td>
+      <td>$\cdots$</td>
+      <td>$t_{1,(K,J_K)}$</td>
+    </tr>
+    <tr>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+      <td>$\vdots$</td>
+    </tr>
+    <tr>
+      <td>Individu $n$</td>
+      <td>$t_{n,(1,1)}$</td>
+      <td>$\cdots$</td>
+      <td>$t_{n,(1,J_1)}$</td>
+      <td>$\cdots$</td>
+      <td>$t_{n,(K,1)}$</td>
+      <td>$\cdots$</td>
+      <td>$t_{n,(K,J_K)}$</td>
+    </tr>
+  </tbody>
+</table>
+:::
+
+- $x_{i,(k,j)}$ : mesure de la variable $j$ du groupe $k$ pour l'individu $i$.
+- les individus $i = 1, \dots, n$
+- les groupes $k=1, \ldots, K$
+- les variables $j=1,\ldots, J_K$
+
+## Objectifs généraux
+
+:::{.callout-note}
+### Étude sur les individus
+
+- Identifier des profils d’individus
+- Étudier la variabilité des profils
+- Visualiser les individus
+:::
+
+:::{.callout-note}
+### Étude sur les groupes
+- Étudier les ressemblances entre les groupes
+- Comparer avec les analyses des groupes (type ACP)
+- Construction de variables synthétiques
+:::
+
+
+# Une ACP globale pondérée
+
+## Approche naïve
+
+
+::: {.panel-tabset}
+
+### Les données
+
+Effectuer directement une ACP classique sur le tableau, en ignorant la structure en groupe des variables ?  
+
+Exemple jouet : 11 variables séparées en 3 groupes
+
+On dispose de 11 variables réparties dans 3 groupes distincts :
+
+- [**Groupe A :** $\{A_1, A_2, A_3, A_4, A_5\}$]{.blue}: variables très fortement corrélées entre elles.
+- [**Groupe B :** $\{B_1, B_2, B_3\}$:]{.orange} variables très faiblement corrélées entre elles.
+- **Groupe C :** $\{C_1, C_2, C_3\}$: variables très faiblement corrélées entre elles.
+
+### Groupe A
+
+
+::: {.columns}
+
+::: {.column width= "65%"}
+
+```{r}
+#| echo: false
+# Simulation 5 / 3 / 3 aux spécifications exactes
+set.seed(42)
+n <- 100
+
+# 1. Signaux latents
+z_A  <- rnorm(n) # Signal ultra-pur du Groupe A
+z_BC <- rnorm(n) # Passerelle modérée entre B3 et C3
+
+# 2. Groupe A (5 variables très fortement corrélées entre elles)
+A <- sapply(1:5, function(i) (-1)^i * z_A + rnorm(n, sd = 0.3))
+colnames(A) <- paste0("A", 1:5)
+
+# 3. Groupe B (B1 et B2 faiblement corrélées ; B3 liée à z_BC)
+B1 <- rnorm(n)
+B2 <- rnorm(n)
+B3 <- 0.75 * z_BC + rnorm(n, sd = 0.65)
+B  <- cbind(B1, B2, B3)
+colnames(B) <- paste0("B", 1:3)
+
+# 4. Groupe C (C1 et C2 faiblement corrélées ; C3 liée à z_BC)
+C1 <- rnorm(n)
+C2 <- rnorm(n)
+C3 <- 0.75 * z_BC + rnorm(n, sd = 0.65)
+C  <- cbind(C1, C2, C3)
+colnames(C) <- paste0("C", 1:3)
+
+# Assemblage du tableau
+df_toy <- data.frame(A, B, C)
+
+
+
+```
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+library(FactoMineR)
+library(factoextra)
+library(ggplot2)
+
+theme_afm <- theme_minimal(base_size = 18) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 16),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  )
+
+acp_A <- PCA(A, graph=FALSE)
+
+
+fviz_pca_var(
+  acp_A, 
+  repel = TRUE,
+  col.var = "#e67e22", # Rouge (A), Bleu (B), Vert (C)
+  title = "ACP sur les variables du Groupe A"
+) + theme_afm
+```
+
+
+:::
+
+::: {.column width= "35%"}
+
+```{r}
+print_table(acp_A$eig[1:5, 1:2])
+```
+
+
+```{r}
+# --- Contrôle des corrélations ---
+cat("Corrélation moyenne interne A :", round(mean(abs(cor(A)[lower.tri(cor(A))])), 2), "\n")
+
+```
+
+:::
+
+:::
+
+### Groupe B
+
+::: {.columns}
+
+::: {.column width= "65%"}
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+
+acp_B <- PCA(B, graph = FALSE)
+
+fviz_pca_var(
+  acp_B,
+  repel = TRUE,
+  col.var = "#377EB8",
+  title = "ACP sur les variables du Groupe B"
+) + theme_afm
+```
+
+
+:::
+
+::: {.column width= "35%"}
+
+```{r}
+print_table(acp_B$eig[1:3, 1:2])
+
+```
+
+```{r}
+
+# --- Contrôle des corrélations ---
+cat("Corrélation moyenne interne B :", round(mean(abs(cor(B)[lower.tri(cor(B))])), 2), "\n")
+```
+
+:::
+
+:::
+
+
+### Groupe C
+
+
+::: {.columns}
+
+::: {.column width= "65%"}
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+acp_C <- PCA(C, graph = FALSE)
+
+fviz_pca_var(
+  acp_C,
+  repel = TRUE,
+  col.var = "#000000",
+  title = "ACP sur les variables du Groupe C"
+) + theme_afm
+```
+
+:::
+
+::: {.column width= "35%"}
+
+```{r}
+print_table(acp_C$eig[1:3, 1:2])
+
+```
+
+```{r}
+# --- Contrôle des corrélations ---
+cat("Corrélation moyenne interne C :", round(mean(abs(cor(C)[lower.tri(cor(C))])), 2), "\n")
+cat("Corrélation ciblée B3 / C3     :", round(cor(df_toy$B3, df_toy$C3), 2), "\n")
+```
+
+:::
+
+:::
+
+
+:::
+
+## ACP classique sur les données globales
+
+::: {.columns}
+
+::: {.column width= "65%"}
+
+
+```{r}
+#| echo: false
+
+library(FactoMineR)
+
+# Assemblage du tableau de données (11 variables)
+df_toy <- data.frame(A, B, C)
+
+# 2. Vecteur d'appartenance aux groupes pour la coloration
+groupes_vars <- factor(c(rep("Groupe A", 5), rep("Groupe B", 3), rep("Groupe C", 3)))
+
+# 3. ACP classique globale (sans pondération par groupe)
+acp_globale <- PCA(df_toy, graph = FALSE)
+```
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+library(factoextra)
+library(ggplot2)
+
+# 5. Graphique ACP Globale avec coloration par groupe
+fviz_pca_var(
+  acp_globale, 
+  repel = TRUE,
+  col.var = groupes_vars,
+  palette = c("#e67e22", "#377EB8", "#000000"), # Rouge (A), Bleu (B), Vert (C)
+  legend.title = "Groupe",
+  title = "ACP Globale : Domination du Groupe A"
+) +
+  theme(
+    legend.position = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  ) + theme_afm
+
+```
+
+
+
+:::
+
+::: {.column width= "35%"}
+
+```{r}
+print_table(acp_globale$eig[1:3, 1:2])
+```
+
+
+- Forte prépondérance de la première direction portée par le groupe A;
+- L’information des groupes B et C est
+diluée dans les autres directions.
+
+:::
+
+:::
+
+
+
+
+## Matrice d'intérêt
+
+Comme pour l’ACP/ACM, il faut identifier la “bonne matrice” à décomposer.
+
+:::{.callout-note}
+
+### Rappels
+
+- **ACP :** Analyse de la matrice de corrélation (variables centrées-réduites) afin d'égaliser la variance de chaque colonne.
+- **AFC :** Analyse du tableau de contingence transformé en profils-lignes / profils-colonnes avec la métrique du $\chi^2$ (pondération par les marges).
+- **ACM :** Analyse du Tableau Disjonctif Complet (TDC) pondéré afin de donner un poids plus fort aux modalités rares.
+:::
+
+:::{.callout-note}
+### Objectifs pour l’AFM
+- Équilibrer l'influence des groupes : Éviter que la première direction principale globale ne soit portée par un unique groupe dominant.
+
+- Respecter la structure interne : Conserver sans altération les corrélations et poids relatifs des variables au sein de chaque groupe.
+
+- Préserver la multidimensionnalité : Garantir qu'un groupe riche en dimensions le reste dans l'analyse globale.
+:::
+## Choix de la pondération
+
+- **Distance entre individus:** $i$ et $i'$ intègre la métrique de chaque groupe. Chaque variable $j$ du groupe $k$ est pondérée par l'inverse de la première valeur propre $\lambda_1^{(k)}$ issue de l'ACP individuelle de ce groupe :
+$$\require{color} d^2(i, i') = \sum_{k=1}^{K} \textcolor{orange}{\frac{1}{\lambda_1^{(k)}}} \sum_{j=1}^{J_k} \left( x_{i, (k,j)} - x_{i', (k,j)} \right)^2$$
+
+**Remarque :** Les variables $x_{\cdot, (k,j)}$ sont supposées centrées et réduites.
+:::
+
+- **Inertie totale de l'AFM :** se décompose comme la somme pondérée des inerties de chaque groupe :
+
+$$\text{Inertie}_{\text{AFM}} = \sum_{k=1}^{K} \frac{1}{\lambda_1^{(k)}} \text{Inertie}_k$$
+
+::: {.callout-tip}
+### Conséquence géométrique
+
+- L'inertie du groupe $k$ dans l'AFM devient $\frac{\text{Inertie}_k}{\lambda_1^{(k)}}$
+- La **première composante principale** est à inertie **1** dans l'analyse globale
+:::
+
+```{r}
+#| echo: false
+
+# 2. Exécution de l'AFM
+toy.afm <- MFA(
+  df_toy, 
+  group = c(5, 3, 3), 
+  type = c("s", "s", "s"), # <--- ICI !
+  name.group = c("Groupe A", "Groupe B", "Groupe C"),
+  graph = FALSE
+)
+```
+
+## Effets de la pondération en AFM
+
+```{r}
+#| echo: false
+
+# Extraction des valeurs propres brutes des ACP séparées (λ_m)
+lambda_A <- toy.afm$separate.analyses$`Groupe A`$eig[, 1]
+lambda_B <- toy.afm$separate.analyses$`Groupe B`$eig[, 1]
+lambda_C <- toy.afm$separate.analyses$`Groupe C`$eig[, 1]
+
+# Vérifie la cohérence
+stopifnot(
+  isTRUE(all.equal(lambda_A, acp_A$eig[, 1], check.attributes = FALSE)),
+  isTRUE(all.equal(lambda_B, acp_B$eig[, 1], check.attributes = FALSE)),
+  isTRUE(all.equal(lambda_C, acp_C$eig[, 1], check.attributes = FALSE))
+)
+```
+
+::: {.columns}
+
+::: {.column}
+
+### Avant pondération ($\lambda_m^{(k)}$)
+
+```{r}
+#| echo: false
+
+# Valeurs propres initiales des premières dimensions par groupe
+eig_avant <- data.frame(
+  Groupe_A  = lambda_A[1:3],
+  Groupe_B  = lambda_B[1:3],
+  Groupe_C  = lambda_C[1:3]
+)
+
+print_table(eig_avant)
+```
+
+:::
+
+::: {.column}
+
+### Après pondération ($\lambda_m^{(k)} / \lambda_1^{(k)}$)
+
+```{r}
+#| echo: false
+
+# 3. Tableau APRÈS pondération (division par λ_1 de chaque groupe)
+eig_apres <- data.frame(
+  Groupe_A  = lambda_A[1:3] / lambda_A[1],  # Ramène l'Axe 1 à 1.00
+  Groupe_B  = lambda_B[1:3] / lambda_B[1],  # Ramène l'Axe 1 à 1.00
+  Groupe_C  = lambda_C[1:3] / lambda_C[1]   # Ramène l'Axe 1 à 1.00
+)
+
+print_table(eig_apres)
+```
+
+:::
+
+:::
+
+::: {.callout-tip}
+### Lecture directe depuis `FactoMineR`
+- `$separate.analyses[[k]]$eig` stocke les valeurs propres brutes de l'ACP du groupe $k$.
+- `$global.pca$eig` stocke les valeurs propres brutes de l'ACP pondérée par block.
+
+:::
+
+
+## Conséquence de la pondération
+
+:::{.r-stack}
+
+:::{.fragment .fade-out fragment-index=1}
+
+### 1. ACP globale non pondérée (domination du Groupe A)
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+```{r}
+#| echo: false
+#| fig-height: 6
+#| fig-width: 6
+#| out-width: 100%
+
+# Cercle des corrélations de l'ACP non pondérée
+fviz_pca_var(
+  acp_globale, 
+  repel = TRUE,
+  col.var = groupes_vars,
+  palette = c("#e67e22", "#377EB8", "#000000"), # Rouge (A), Bleu (B), Vert (C)
+  legend.title = "Groupe",
+  title = "ACP globale (sans pondération)"
+) +
+  theme(
+    legend.position = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  ) + theme_afm
+
+```
+
+:::
+
+::: {.column width="40%"}
+
+```{r}
+# Valeurs propres et inertie expliquée (ACP non pondérée)
+print_table(acp_globale$eig[1:5, 1:2])
+```
+
+:::
+
+:::
+
+:::
+
+:::{.fragment .fade-in-then-out fragment-index=1}
+
+### 2. ACP globale pondérée de l'AFM (rééquilibrage des groupes)
+
+::: {.columns}
+
+::: {.column width="60%"}
+
+```{r}
+#| echo: false
+#| fig-height: 6
+#| fig-width: 6
+#| out-width: 100%
+
+
+# Cercle des corrélations de l'ACP pondérée globale dans l'AFM
+fviz_mfa_var(
+  toy.afm, 
+  repel = TRUE,
+  choice = "quanti.var", # Affiche les corrélations des variables quantitatives
+  palette = c("#e67e22", "#377EB8", "#000000"),
+  legend.title = "Groupe",
+  title = "Cercle des corrélations de l'AFM"
+) +
+  theme(
+    legend.position = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  ) + theme_afm
+
+```
+
+:::
+
+::: {.column width="40%"}
+
+```{r}
+# Valeurs propres et inertie expliquée (ACP globale AFM)
+print_table(toy.afm$global.pca$eig[1:5, 1:2])
+```
+
+
+- Le premier plan capture un pourcentage d'inertie plus faible
+- La structure de dépendance de chaque groupe est mieux préservée et représentée
+:::
+
+:::
+
+:::
+
+:::
+
+## Interprétation de base
+
+- L’AFM est une ACP pondérée: 
+  
+  - Représentations des individus et des variables
+  - Variables synthétiques : cos2, contribution
+  - Ajout post-ACP de variables ou d’individus supplémentaire pour aider à l’interprétation.
+
+- Spécificités de l’AFM: Structure en groupe des variables
+
+- On peut obtenir un résumé des principaux résultats en utilisant la fonction ```summary```. 
+
+```{r}
+summary(toy.afm)
+```
+
+
+## Exemple: le jeu de donnée des vins 
+
+::: {.panel-tabset}
+
+## Descriptions
+
+- $n = 10$ vins différents sont soumis à des analyses sensorielles
+- $K = 3$ groupes : expert, étudiant, consommateur ;
+- $J_1 = 27$ critères de description pour les experts, et $J_2 = J_3 = 15$ critères pour les étudiants et les consommateurs.
+
+
+::: {.data-table}
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th colspan="3">Groupe Expert</th>
+      <th colspan="3">Groupe Étudiant</th>
+      <th colspan="3">Groupe Consommateur</th>
+    </tr>
+    <tr>
+      <th> </th>
+      <th></th>
+      <th>27 colonnes</th>
+      <th></th>
+      <th></th>
+      <th>15 colonnes</th>
+      <th></th>
+      <th></th>
+      <th>15 colonnes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Vin $1$</td>
+      <td></td>
+      <td>$\cdots$</td>
+      <td></td>
+      <td></td>
+      <td>$\cdots$</td>
+      <td></td>
+      <td></td>
+      <td>$\cdots$</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>$\vdots$</td>
+      <td></td>
+      <td>$\vdots$</td>
+      <td></td>
+      <td></td>
+      <td>$\vdots$</td>
+      <td></td>
+      <td></td>
+      <td>$\vdots$</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Vin $10$</td>
+      <td></td>
+      <td>$\cdots$</td>
+      <td></td>
+      <td></td>
+      <td>$\cdots$</td>
+      <td></td>
+      <td></td>
+      <td>$\cdots$</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+:::
+
+
+L'AFM va nous permettre de :
+
+- dresser des profils de vins selon les critères d’analyse,
+- identifier des différences de description entre les 3 groupes.
+
+
+## En R
+
+```{r}
+script_dir <- get_script_dir()
+vins <- read.table(file.path(script_dir, "data/AnaDo_JeuDonnees_VinsJury.csv"), header=TRUE, sep=";",dec=".", row.names=1, check.names=FALSE)
+```
+
+```{r}
+#| echo: false
+#| out-fold: true
+
+summary(vins, digits = 2)
+```
+
+L'AFM avec groupe supplémentaire
+```{r}
+library(FactoMineR)
+vins.mfa <- MFA(vins, group=c(1,27,15,15,60), type=c("n",rep("s",4)), num.group.sup=c(1,5),
+           name.group=c("Cépage", "Expert", "Étudiant", "Consommateur", "Préférence"), ncp=9, graph=FALSE)
+```
+
+:::
+
+
+
+## Exemple (jury de vins)
+
+
+Valeurs propres et inertie expliquée (ACP globale AFM)
+```{r}
+#| echo: false
+#| out-width: 70%
+
+# Valeurs propres et inertie expliquée (ACP globale AFM)
+plot(vins.mfa $global.pca$eig[, 1])
+```
+
+
+::: {.columns}
+
+::: {.column}
+
+```{r}
+print_table(vins.mfa $global.pca$eig[, c(1,3)])
+```
+
+:::
+
+::: {.column}
+
+- Règle du coude : on ne garderait que les 3 premières
+directions
+- On pourrait rajouter la 3ème (et 4ème) pour arriver à une
+inertie projetée $>70\%$ ($>80\%$) de l’inertie totale.
+:::
+
+:::
+## Étude des individus
+
+::: {.panel-tabset}
+
+### Plot
+
+```{r}
+#| echo: false
+#| label: plot-ind-cos2
+#| fig-width: 10
+#| fig-height: 10
+#| out-width: 70%
+
+library(factoextra)
+
+# Représentation des individus avec gradient selon le cos2
+fviz_mfa_ind(
+  vins.mfa,
+  col.ind = "cos2",
+  invisible= c('quali.sup', "quanti.sup"),
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  repel = TRUE
+) +
+  labs(
+    title = "Plan factoriel (1-2) des individus",
+    color = expression(cos^2)
+  ) +
+  theme_afm
+```
+
+
+### Qualité ($\cos^2$)
+
+::: {.columns}
+
+::: {.column width="50%"}
+- **Graphique des $\cos^2$ cumuls**
+
+```{r}
+#| echo: false
+#| label: plot-ind-cos2-bar
+
+# Qualité de représentation cumulée sur le plan 1-2
+fviz_cos2(vins.mfa, choice = "ind", axes = 1:2, top = 25) +
+  labs(title = "cos² cumulé des individus (Axes 1 & 2)") +
+  theme_afm +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+:::
+
+::: {.column width="50%"}
+- **Tableau détaillé ($\cos^2$)**
+
+```{r}
+#| echo: false
+#| label: table-ind-cos2
+
+# Extraction et calcul du cos2 cumulé
+cos2_ind_plan <- rowSums(vins.mfa$ind$cos2[, 1:2])
+df_ind_cos2 <- data.frame(
+  Axe_1 = vins.mfa$ind$cos2[, 1],
+  Axe_2 = vins.mfa$ind$cos2[, 2],
+  Plan_1_2 = cos2_ind_plan
+)
+
+# Tri par qualité globale décroissante
+print_table(df_ind_cos2[order(-df_ind_cos2$Plan_1_2), ])
+```
+:::
+
+:::
+
+### Contributions
+
+::: {.columns}
+
+::: {.column width="50%"}
+- **Graphique des contributions**
+
+```{r}
+#| echo: false
+#| label: plot-ind-contrib-bar_1
+
+# Contributions des variables à l'Axe 1
+fviz_contrib(vins.mfa, choice = "ind", axes = 1, top = 25) +
+  labs(title = "Contributions des individus à l'Axe 1 (%)") +
+  theme_afm +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+#| echo: false
+#| label: plot-ind-contrib-bar_2
+
+# Contributions des variables à l'Axe 2
+fviz_contrib(vins.mfa, choice = "ind", axes = 2, top = 25) +
+  labs(title = "Contributions des individus à l'Axe 2 (%)") +
+  theme_afm +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+:::
+
+::: {.column width="50%"}
+- **Tableau détaillé (Contrib %)**
+
+```{r}
+#| echo: false
+#| label: table-ind-contrib
+
+# Extraction et calcul de la contribution cumulée sur le plan
+contrib_ind_plan <- rowSums(vins.mfa$ind$contrib[, 1:2])
+df_ind_contrib <- data.frame(
+  Dim_1 = vins.mfa$ind$contrib[, 1],
+  Dim_2 = vins.mfa$ind$contrib[, 2],
+  Total = contrib_ind_plan
+)
+
+# Tri par contribution décroissante
+print_table(df_ind_contrib[order(-df_ind_contrib$Total), ])
+```
+:::
+
+:::
+
+:::
+
+## Étude des variables
+
+::: {.panel-tabset}
+
+### Graphique (par groupe)
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 10
+#| out-width: 70%
+
+library(factoextra)
+```
+
+:::{.r-stack}
+
+:::{.fragment .fade-out fragment-index=1}
+
+```{r}
+#| echo: false
+#| label: plot-var-groupes
+#| fig-width: 10
+#| fig-height: 10
+#| out-width: 70%
+
+plot.MFA(
+  vins.mfa,
+  choix = "var",
+  invisible = c("quanti.sup", "quali.sup"),
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  graph.type = "ggplot",
+  legend.title = "Groupe"
+) +
+  theme_afm
+```
+
+:::
+
+:::{.fragment .fade-in-then-out fragment-index=1}
+
+```{r}
+#| echo: false
+#| label: plot-var-groupes-filtered
+#| fig-width: 10
+#| fig-height: 10
+#| out-width: 70%
+
+# Cercle des corrélations après filtrage des variables mal représentées
+plot.MFA(
+  vins.mfa,
+  choix = "var",
+  invisible = c("quanti.sup", "quali.sup"),
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  select="cos2 20",
+  unselect=.8,
+  graph.type = "ggplot",
+  legend.title = "Groupe"
+) +
+  theme_afm
+```
+
+:::
+
+:::{.fragment .fade-in fragment-index=2}
+
+```{r}
+#| echo: false
+#| label: plot-var-groupes-sucre-acide
+#| fig-width: 10
+#| fig-height: 10
+#| out-width: 70%
+
+plot.MFA(
+  vins.mfa,
+  choix = "var",
+  invisible = c("quanti.sup", "quali.sup"),
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  select=grep("sucre|acide", rownames(vins.mfa$quanti.var$coord), ignore.case = TRUE, value = FALSE),
+  unselect=.9,
+  graph.type = "ggplot",
+  legend.title = "Groupe"
+) +
+  theme_afm
+```
+
+:::
+
+:::
+
+### Qualité ($\cos^2$)
+
+::: {.columns}
+
+::: {.column width="50%"}
+- **Graphique des $\cos^2$ cumuls**
+
+```{r}
+#| echo: false
+#| label: plot-var-cos2-bar
+
+# Qualité de représentation cumulée sur le plan 1-2
+fviz_cos2(vins.mfa, choice = "quanti.var", axes = 1:2, top = 25) +
+  labs(title = "cos² cumulé des variables (Axes 1 & 2)") +
+  theme_afm +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+:::
+
+::: {.column width="50%"}
+- **Tableau détaillé ($\cos^2$)**
+
+```{r}
+#| echo: false
+#| label: table-var-cos2
+
+# Extraction et calcul du cos2 cumulé
+cos2_var_plan <- rowSums(vins.mfa$quanti.var$cos2[, 1:2])
+df_var_cos2 <- data.frame(
+  Axe_1 = vins.mfa$quanti.var$cos2[, 1],
+  Axe_2 = vins.mfa$quanti.var$cos2[, 2],
+  Plan_1_2 = cos2_var_plan
+)
+
+# Tri par qualité globale décroissante
+print_table(df_var_cos2[order(-df_var_cos2$Plan_1_2), ], scroll = 18)
+```
+:::
+
+:::
+
+### Contributions
+
+::: {.columns}
+
+::: {.column width="50%"}
+- **Graphique des contributions**
+
+```{r}
+#| echo: false
+#| label: plot-var-contrib-bar
+
+# Contributions des variables à l'Axe 1
+fviz_contrib(vins.mfa, choice = "quanti.var", axes = 1, top = 25) +
+  labs(title = "Contributions des variables à l'Axe 1 (%)") +
+  theme_afm +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+#| echo: false
+#| label: plot-var-contrib-bar_2
+
+# Contributions des variables à l'Axe 2
+fviz_contrib(vins.mfa, choice = "quanti.var", axes = 2, top = 25) +
+  labs(title = "Contributions des variables à l'Axe 2 (%)") +
+  theme_afm +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+:::
+
+::: {.column width="50%"}
+- **Tableau détaillé (Contrib %)**
+
+```{r}
+#| echo: false
+#| label: table-var-contrib
+
+# Extraction et calcul de la contribution cumulée sur le plan
+contrib_var_plan <- rowSums(vins.mfa$quanti.var$contrib[, 1:2])
+df_var_contrib <- data.frame(
+  Dim_1 = vins.mfa$quanti.var$contrib[, 1],
+  Dim_2 = vins.mfa$quanti.var$contrib[, 2],
+  Total = contrib_var_plan
+)
+
+# Tri par contribution décroissante
+print_table(df_var_contrib[order(-df_var_contrib$Total), ], scroll = 18)
+```
+:::
+
+:::
+
+:::
+
+# Représentation des groupes
+
+## Caractérisation de la première composante
+
+Formulation mathématique
+
+- **En ACP classique** (centrée-réduite), la première composante factorielle $v_1$ (de norme 1) cherche à maximiser la liaison globale avec l'ensemble des $p$ variables :
+
+$$v_1 = \operatorname*{argmax}_{\|v\|=1} \sum_{j=1}^p \operatorname{cov}^2(v, x_{\cdot, j})$$
+
+- **En AFM (ACP pondérée)**, chaque variable du groupe $k$ est pondérée par $1 / \sqrt{\lambda_1^{(k)}}$. La première composante $v_1$ de l'AFM satisfait donc :
+
+$$\begin{aligned}v_1 &= \operatorname*{argmax}_{\|v\|=1} \sum_{k=1}^K \sum_{j=1}^{J_k} \operatorname{cov}^2\left(v, \tfrac{x_{:, (k,j)}}{\sqrt{\lambda_1^{(k)}}}\right) \\
+& = \operatorname*{argmax}_{\|v\|=1} \sum_{k=1}^K \frac{1}{\lambda_1^{(k)}} \sum_{j=1}^{J_k} \operatorname{cov}^2(v, x_{:, (k,j)})\end{aligned}$$
+
+
+
+## Interprétation géométrique
+
+::: {.callout-important}
+#### Propriété de borne supérieure (Équilibre inter-groupes)
+Soit $I_k(v) = \sum_{j=1}^{J_k} \text{cov}^2(v, x_{:, (k,j)})$ définie pour tout $v\in\mathbb{R}^J$ tel que $\|v\|=1$. L'inertie du groupe $k$ projetée sur la direction $v$, est 
+
+$$0 \le \mathcal{L}_g(k,v_1) =  \frac{I_k(v)}{\lambda_1^{(k)}} \le 1$$
+:::
+
+- Interprétations, 
+
+  - Par définition de la valeur propre maximale $\lambda_1^{(k)}$ du groupe $k$, l'inertie projetée sur n'importe quel axe $v$ ne peut jamais dépasser $\lambda_1^{(k)}$, et on a bien  $\mathcal{L}_g(k,v_1) \in [0, 1]$
+  - $\mathcal{L}_g(k,v_1) = 0$ si toutes les variables du groupe $k$ sont non-corrélées à $v_1$
+  - $\mathcal{L}_g(k,v_1)= 1$ si $v_1$ correspond à la 1ère composante principale du groupe $k$.
+
+- Conséquences :
+
+  - **Contribution maximale égalisée :** Quel que soit le nombre de variables $J_k$ ou la structure du groupe $k$, sa contribution maximale à la première dimension de l'AFM vaut **au plus 1**.
+  - **Consensus :** La composante $v_1$ s'ajuste pour être la plus proche possible des premières composantes de l'ensemble des $K$ groupes.
+
+
+
+## Représentation des groupes
+
+
+::: {.columns}
+
+::: {.column}
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+plot.MFA(
+  vins.mfa,
+  choix = "group",
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  select=rownames(vins.mfa$group$coord),
+  unselect=0.0,
+  graph.type = "ggplot",
+  legend.title = "Groupe"
+) +
+  theme_afm
+
+```
+
+
+:::
+
+::: {.column}
+Les inerties projetées
+
+```{r}
+inertie_groupe_dim12 <- vins.mfa$group$coord[, 1:2]
+```
+```{r}
+#| echo: false
+
+# Affichage des coordonnées des groupes sur la Dim 1 (toutes <= 1)
+df_bound <- data.frame(
+  Dim1 = inertie_groupe_dim12[,1],
+  Dim2 = inertie_groupe_dim12[,2]
+)
+
+# On affiche le tableau
+print_table(df_bound)
+```
+
+La somme des inerties des groupes actifs $=$ inertie de l'axe 1 de l'AFM
+```{r}
+#| echo: true
+cat("Somme des coord des groupes (Axes 1-2) :", colSums(inertie_groupe_dim12), "\n",
+    "Valeurs propres de l'Axe 1-2 (AFM)     :", vins.mfa$eig[1:2, 1])
+```
+
+:::
+
+:::
+
+- 1ère dimension commune aux 3 groupes
+- 2ème dimension liée surtout au groupe Expert
+
+
+## Similarité entre groupes
+
+::: {.panel-tabset}
+
+### Formulations mathématiques
+
+- **Liaison globale :** Le coefficient $\mathcal{L}_g$ mesure la covariance globale croisée entre deux groupes de variables $k$ et $k'$ :
+
+$$\mathcal{L}_g(k, k') = \sum_{j=1}^{J_k} \sum_{j'=1}^{J_{k'}} \text{cov}^2\left( \tfrac{x_{:,(k,j)}}{\sqrt{\lambda_1^{(k)}}}, \tfrac{x_{:,(k',j')}}{\sqrt{\lambda_1^{(k')}}} \right) = \tfrac{1}{\lambda_1^{(k)} \lambda_1^{(k')}} \sum_{j=1}^{J_k} \sum_{j'=1}^{J_{k'}} \text{cov}^2\left(x_{:,(k,j)}, x_{:,(k',j')}\right)$$
+
+- **Correlation généralisée :** Le coefficient $RV$ est la version normalisée du coefficient $\mathcal{L}_g$
+$$RV(k, k') = \frac{\mathcal{L}_g(k, k')}{\sqrt{\mathcal{L}_g(k, k) \, \mathcal{L}_g(k', k')}}$$
+
+
+Interprétation des bornes du $RV \in [0; 1]$
+
+- **$RV(k, k') = 0$ :** Indépendance linéaire totale. Toutes les variables du groupe $k$ sont orthogonales à toutes les variables du groupe $k'$.
+- **$RV(k, k') = 1$ :** Structure identique. Les nuages d'individus générés séparément par l'ACP du groupe $k$ et l'ACP du groupe $k'$ sont rigoureusement identiques (à un facteur d'échelle/homothétie et une rotation près).
+
+
+### Matrice $RV$ (R)
+
+Matrice des coefficients RV entre tous les groupes
+```{r}
+#| eval: false
+vins.mfa$group$RV
+```
+
+```{r}
+#| label: plot-rv-heatmap
+#| echo: false
+
+library(ggplot2)
+library(reshape2)
+
+# 1. Sélection uniquement des groupes actifs + MFA
+groupes_actifs <- rownames(vins.mfa$group$coord)
+nom_mfa <- grep("^mfa$", colnames(vins.mfa$group$RV), ignore.case = TRUE, value = TRUE)
+selection <- c(groupes_actifs, nom_mfa)
+
+mat_rv_clean <- vins.mfa$group$RV[selection, selection]
+
+# 2. Conversion en format long
+df_rv <- melt(mat_rv_clean)
+colnames(df_rv) <- c("Groupe1", "Groupe2", "RV")
+
+# 3. Réorganisation des axes pour respecter la disposition matricielle (haut -> bas)
+df_rv$Groupe1 <- factor(df_rv$Groupe1, levels = selection)
+df_rv$Groupe2 <- factor(df_rv$Groupe2, levels = rev(selection))
+
+# 4. Graphique Heatmap
+ggplot(df_rv, aes(x = Groupe1, y = Groupe2, fill = RV)) +
+  geom_tile(color = "white", linewidth = 0.8) +
+  geom_text(
+    aes(label = sprintf("%.2f", RV)), 
+    color = ifelse(df_rv$RV > 0.8, "white", "black"), 
+    size = 4
+  ) +
+  scale_fill_gradient(low = "#F7FBFF", high = "#08306B", limits = c(0.6, 1)) +
+  coord_fixed() +
+  labs(
+    title = "Matrice des coefficients RV entre groupes",
+    subtitle = "Mesure de proximité des structures d'individus entre tableaux",
+    x = "", y = "", fill = "RV"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank()
+  )
+```
+- La liaison la plus forte est celle entre Etudiant et Expert.
+- Etudiant est le plus proche de la configuration moyenne.
+:::
+
+## Indice de multidimensionnalité
+
+::: {.panel-tabset}
+
+### Formulations mathématiques
+Alors que les termes hors-diagonale $\mathcal{L}_g(k, k')$ mesurent la liaison entre deux groupes distincts, les termes diagonaux $\mathcal{L}_g(k, k)$ caractérisent la structure interne du groupe $k$ :
+
+$$\mathcal{L}_g(k, k) = \frac{1}{\left(\lambda_1^{(k)}\right)^2} \sum_{j=1}^{J_k} \left(\lambda_j^{(k)}\right)^2 = 1 + \sum_{j=2}^{J_k} \left(\frac{\lambda_j^{(k)}}{\lambda_1^{(k)}}\right)^2$$
+
+
+Propriétés clés de $\mathcal{L}_g(k, k)$
+
+- Borne inférieure : $\mathcal{L}_g(k, k) \ge 1$ pour tout groupe.
+- Groupe unidimensionnel ($\mathcal{L}_g(k, k) = 1$) : Toutes les variables du groupe sont parfaitement colinéaires (une seule dimension suffit à tout résumer).
+- Groupe multidimensionnel ($\mathcal{L}_g(k, k) > 1$) : Le groupe porte plusieurs dimensions d'information indépendantes non négligeables. Plus $\mathcal{L}_g(k, k)$ est élevé, plus l'information du groupe est complexe/riche.
+
+### Calcul 
+```{r}
+#| eval: false
+vins.mfa$group$Lg
+```
+
+Inertie interne (multidimensionnalité) des groupes de juges
+```{r}
+#| echo: false
+
+
+# 1. Extraction de la matrice Lg
+mat_lg <- vins.mfa$group$Lg
+
+# 2. Conservation uniquement des groupes actifs
+groupes_actifs <- rownames(vins.mfa$group$coord)
+lg_diag <- diag(mat_lg[groupes_actifs, groupes_actifs])
+
+# 3. Tableau récapitulatif
+df_lg <- data.frame(
+  Groupe = names(lg_diag),
+  `Lg(k,k)` = round(lg_diag, 2),
+  Structure = ifelse(lg_diag > 1.3, "Fortement multidimensionnel", "Moyennement multidimensionnel"),
+  check.names = FALSE
+)
+
+print_table(df_lg)
+```
+
+:::

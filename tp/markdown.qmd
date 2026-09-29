@@ -2,6 +2,8 @@
 title: "Démarrage en Markdown"
 from: markdown+emoji
 author: Joseph Salmon
+
+format: html
 ---
 
 Ce texte est principalement inspiré du travail d'Arthur Turrell et de son cours sur Quarto pour les économistes [](https://aeturrell.github.io/coding-for-economists/intro.html).

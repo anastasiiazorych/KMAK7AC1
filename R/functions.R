@@ -28,3 +28,37 @@ print_table <- function(data, digits = 3, caption = "", scroll = 0) {
 
   return(tbl)
 }
+
+
+get_script_dir <- function() {
+  # 1. Cas Quarto (quarto render document.qmd, quel que soit l'éditeur)
+  if (requireNamespace("knitr", quietly = TRUE) &&
+      !is.null(knitr::current_input(dir = TRUE))) {
+    return(dirname(knitr::current_input(dir = TRUE)))
+  }
+  
+  # 2. Cas RStudio (chunk exécuté interactivement, ou script ouvert)
+  if (requireNamespace("rstudioapi", quietly = TRUE) &&
+      rstudioapi::isAvailable() &&
+      rstudioapi::getActiveDocumentContext()$path != "") {
+    return(dirname(rstudioapi::getActiveDocumentContext()$path))
+  }
+  
+  # 3. Cas VSCode (extension vscode-R) : pas d'API équivalente à rstudioapi,
+  #    mais l'extension place le wd sur le dossier du fichier lors d'un "Run Chunk"
+  if (Sys.getenv("TERM_PROGRAM") == "vscode" ||
+      Sys.getenv("VSCODE_PID") != "") {
+    return(getwd())
+  }
+  
+  # 4. Cas Rscript en ligne de commande
+  args <- commandArgs(trailingOnly = FALSE)
+  file_arg <- grep("^--file=", args, value = TRUE)
+  if (length(file_arg) > 0) {
+    return(dirname(sub("^--file=", "", file_arg)))
+  }
+  
+  # 5. Fallback
+  warning("Impossible de détecter le dossier du script, retour au working directory.")
+  getwd()
+}

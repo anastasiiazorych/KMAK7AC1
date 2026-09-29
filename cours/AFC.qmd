@@ -5,25 +5,12 @@ author: "Benjamin Charlier,"
 date: ""
 format:
   revealjs:
-    theme: metropolis.scss
-    css: ../table.css
-    width: 1024
-    height: 768
-    slide-level: 2
-    slide-number: true
-    progress: true
-    history: false
-    toc: true
-    toc-depth: 1
-    code-line-numbers: false
-    eval: true
-    echo: true
+    output-file: AFC_slides.html
+
+  html:
+    output-file: AFC.html
 
 bibliography: ../reference.bib
-
-knitr:
-  opts_chunk:
-    prompt: true
 ---
 
 ```{r}
@@ -132,6 +119,7 @@ round(r,digit=2)
 ```
 ```{r}
 #| echo: false
+
 library(ggplot2)
 ggplot(data.frame(modalite = names(r), marge = as.numeric(r)),
        aes(x = modalite, y = marge, fill = modalite)) +
@@ -536,7 +524,7 @@ iner.col * sum(K)
 
 # Analyse Factorielle des Correspondences
 
-## Analyse Factorielle des Correspondences (AFC)
+## Principes
 
 Décrire simultanément les deux nuages pondérés suivants :
 

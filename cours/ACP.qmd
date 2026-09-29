@@ -5,25 +5,13 @@ author: "Benjamin Charlier, Adrien Mazoyer"
 date: ""
 format:
   revealjs:
-    theme: metropolis.scss
-    css: ../table.css
-    width: 1024
-    height: 768
-    slide-level: 2
-    slide-number: true
-    progress: true
-    history: false
-    toc: true
-    toc-depth: 1
-    code-line-numbers: false
-    eval: true
-    echo: true
+    output-file: ACP_slides.html
+  
+  html:
+    output-file: ACP.html
+
 
 bibliography: ../reference.bib
-
-knitr:
-  opts_chunk:
-    prompt: true
 ---
 
 ```{r}

@@ -1,6 +1,8 @@
 ---
 title: "Démarrage en Quarto"
 author: Joseph Salmon, Benjamin Charlier
+
+format: html
 ---
 
 

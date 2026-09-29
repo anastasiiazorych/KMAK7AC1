@@ -5,24 +5,12 @@ author: "Benjamin Charlier, Adrien Mazoyer"
 date: ""
 format:
   revealjs:
-    theme: metropolis.scss
-    css: ../table.css
-    slide-level: 2
-    toc: false
-    email-obfuscation: javascript
-    slide-number: true
-    code-line-numbers: false
-    eval: true
-    echo: true
-    format:
-    width: 1024
-    height: 768
-    history: false
+    output-file: presentation_slides.html
+  
+  html:
+    output-file: presentation.html
 
 
-knitr:
-  opts_chunk:
-    prompt: true
 ---
 
 <style>
@@ -111,7 +99,7 @@ knitr:
 
 ### Programme
 
-1. [Analyse en composantes principales (variable quantitative)](../slides/ACP.qmd)
+1. Analyse en composantes principales (variable quantitative)
 2. Analyse des correspondances multiples (variable qualitative)
 3. Analyse Factorielle Multiple (variables groupées)
 4. Apprentissage non supervisé (clustering)

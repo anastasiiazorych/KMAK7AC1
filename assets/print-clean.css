@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* Masquer les titres d'onglets injectés JS en mode web normal */
+.print-tab-title {
+  display: none;
+}
+
+@media print {
+  /* =========================================================
+     1. PAGE, MARGES & SUPPRESSION DE L'INTERFACE WEB
+     ========================================================= */
+  @page {
+    size: A4 portrait;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+
+  /* Masquer toute l'interface de navigation Quarto et les onglets Web */
+  #quarto-header,
+  .navbar,
+  #quarto-sidebar,
+  #quarto-margin-sidebar,
+  .quarto-secondary-nav,
+  footer.footer,
+  .nav-page,
+  .toc-actions,
+  .panel-tabset > .nav-tabs,
+  .panel-tabset > ul.nav {
+    display: none !important;
+  }
+
+  /* Égaliser la zone de contenu sur 100 % de la largeur */
+  #quarto-content,
+  main.content,
+  .page-columns,
+  .body-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* =========================================================
+     2. TYPOGRAPHIE GLOBALE (Fira Sans 11px / Pas de majuscules)
+     ========================================================= */
+  body, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fira Sans', sans-serif !important;
+    text-transform: none !important;
+  }
+
+  html, body {
+    font-size: 11px !important;
+    font-weight: 200 !important; /* Renforce la lisibilité à 11px sur papier */
+    line-height: 1.35 !important;
+    color: #111111 !important;
+  }
+
+
+  /* =========================================================
+     3. HIÉRARCHIE DES TITRES & TITRES D'ONGLETS
+     ========================================================= */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600 !important;
+    color: #000000 !important;
+    letter-spacing: normal !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  h1.title, h1 {
+    font-size: 1.5rem !important; /* ~16.5px */
+    margin: 0 0 0.6rem 0 !important;
+    padding-bottom: 0.25rem !important;
+    border-bottom: 2px solid #eb811b !important; /* Orange Metropolis */
+  }
+
+  h2 {
+    font-size: 1.2rem !important; /* ~13px */
+    margin: 1rem 0 0.4rem 0 !important;
+    padding-bottom: 0.15rem !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+  }
+
+  h3 {
+    font-size: 1.05rem !important; /* ~11.5px */
+    margin: 0.8rem 0 0.3rem 0 !important;
+  }
+
+  h4, .print-tab-title {
+    font-size: 1rem !important; /* 11px */
+    margin: 0.6rem 0 0.2rem 0 !important;
+  }
+
+  /* Rendre visible le titre d'onglet injecté par le script JS */
+  .print-tab-title {
+    display: block !important;
+    color: #eb811b !important;
+    font-weight: 600 !important;
+  }
+
+  /* =========================================================
+     4. GESTION DES BLOCS, CODE ET SAUTS DE PAGE
+     ========================================================= */
+  p, ul, ol {
+    margin: 0 0 0.4rem 0 !important;
+  }
+
+  li {
+    margin-bottom: 0.15rem !important;
+  }
+
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Code source en Fira Code */
+  pre, code, kbd {
+    font-family: 'Fira Code', monospace !important;
+    font-size: 9.5px !important;
+  }
+
+  /* Blocage des coupures au milieu d'un élément réactif */
+  pre, 
+  code, 
+  .callout, 
+  table, 
+  .table, 
+  figure, 
+  .cell-output,
+  .panel-tabset .tab-pane {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* =========================================================
+     5. DÉPLIEMENT DES PANNEAUX (.panel-tabset) 
+     ========================================================= */
+  .panel-tabset > .tab-content {
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .panel-tabset .tab-pane {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0.4rem 0 0.8rem 0 !important;
+    padding: 8px 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* =========================================================
+     5. COLONNES ET GRILLES CÔTE À CÔTE (.columns / .grid)
+     ========================================================= */
+  /* Conteneur de colonnes Quarto (.columns) */
+  .columns {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+    margin-bottom: 0.8rem !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Chaque colonne individuelle */
+  .column {
+    flex: 1 1 0px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Gestion de la grille responsive Quarto (.grid) */
+  .grid {
+    display: grid !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  [class*="g-col-"] {
+    margin: 0 !important;
+  }
+}

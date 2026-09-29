@@ -1,6 +1,8 @@
 ---
 title: "Statistique Exploratoire et Apprentissage non supervisé"
 subtitle: "KMAK7AC1"
+
+format: html
 ---
 
 ::: {.course-banner}

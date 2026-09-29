@@ -1,5 +1,7 @@
 ---
 title: "TD 2 -- Analyse Factorielle des Correspondences et Analyse des Correspondances Multiples"
+
+format: html
 ---
 
 ```{r}

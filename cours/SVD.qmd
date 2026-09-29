@@ -5,17 +5,10 @@ author: "B. Charlier, N. Verzelen, J. Salmon"
 date: ""
 format:
   revealjs:
-    theme: metropolis.scss
-    css: ../table.css
-    width: 1024
-    slide-level: 2
-    height: 768
-    slide-number: true
-    progress: true
-    history: false
-    toc: true
-    toc-depth: 1
-    code-line-numbers: false
+    output-file: SVD_slides.html
+  
+  html:
+    output-file: SVD.html
 
 bibliography: ../reference.bib
 ---
@@ -86,7 +79,9 @@ $\langle u_i,u_j\rangle=\delta_{ij}$ et $\langle v_i,v_j\rangle=\delta_{ij}$.
 Les $s_j$ sont les **valeurs singulières** de $X$ ; les $u_j$ (resp. $v_j$) sont les **vecteurs singuliers à gauche** (resp. **à droite**).
 
 ::: {.callout-note title="Propriété variationnelle de la plus grande valeur singulière"}
-$$s_1=\max_{\substack{u\in\mathbb{R}^n,\ v\in\mathbb{R}^p\\\|u\|=\|v\|=1}} u^\top Xv.$$
+$$
+s_1=\max_{\substack{u\in\mathbb{R}^n,\ v\in\mathbb{R}^p \\ \|u\|=\|v\|=1}} u^\top Xv.
+$$
 :::
 
 Le lagrangien est
@@ -234,7 +229,7 @@ fig.update_layout(
 )
 fig.update_xaxes(showticklabels=False)
 fig.update_yaxes(showticklabels=False)
-fig.show()
+fig.show(config={"displayModeBar": False})
 ```
 
 

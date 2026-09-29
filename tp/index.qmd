@@ -1,5 +1,7 @@
 ---
 title: "Travaux Pratique"
+
+format: html
 ---
 
 ::: {.callout-warning}

@@ -13,12 +13,12 @@ project:
   - index.qmd
   - resources.qmd
   - cours/index.qmd
-  - slides/index.qmd
-  - slides/SVD.qmd
-  - slides/ACP.qmd
-  - slides/AFC.qmd
-  - slides/ACM.qmd
-  - slides/presentation.qmd
+  - cours/SVD.qmd
+  - cours/ACP.qmd
+  - cours/AFC.qmd
+  - cours/ACM.qmd
+  - cours/AFM.qmd
+  - cours/presentation.qmd
   - td/1_ACP/TD.qmd
   - td/2_ACM/TD.qmd
   - tp/index.qmd
@@ -44,7 +44,6 @@ website:
     search: true
     left:
       - sidebar:Cours
-      - sidebar:Slides
       - sidebar:TD
       - sidebar:TP
       - sidebar:Quarto
@@ -60,16 +59,12 @@ website:
     - id: Cours
       collapse-level: 3
       contents: 
-        - cours/index.qmd
-
-    - id: Slides
-      collapse-level: 3
-      contents:
-        - slides/presentation.qmd
-        - slides/SVD.qmd
-        - slides/ACP.qmd
-        - slides/AFC.qmd
-        - slides/ACM.qmd
+        - cours/presentation.qmd
+        - cours/SVD.qmd
+        - cours/ACP.qmd
+        - cours/AFC.qmd
+        - cours/ACM.qmd
+        - cours/AFM.qmd
 
     - id: TD
       collapse-level: 3
@@ -87,14 +82,25 @@ website:
       contents:
         - tp/markdown.qmd
         - tp/quarto.qmd
+    
+    - id: Réferences
+      contents:
+        - resources.qmd
 
 
 format:
   html:
-    theme: [lux, custom.scss]
-    css: table.css
-    html-math-method: katex
-    number-sections: false
+    theme: 
+      - lux
+      - assets/custom.scss
+    css:
+      - assets/table.css
+      - assets/print-clean.css
+    include-in-header:
+      - assets/unfold-panel.html
+
+    html-math-method: mathjax
+    number-sections: true
     toc-depth: 3
     code-fold: false
     code-tools:
@@ -111,6 +117,27 @@ format:
     #toc-location: right
     #toc: true
 
+  revealjs:
+    theme: assets/metropolis.scss
+    css: assets/table.css
+    width: 1024
+    height: 768
+    slide-level: 2
+    slide-number: true
+    progress: true
+    history: false
+    toc: true
+    toc-depth: 1
+    code-line-numbers: false
+    eval: true
+    echo: true
+
 execute:
   freeze: auto
   cache: false
+
+knitr:
+  opts_chunk:
+    prompt: true
+    message: false
+    warning: false

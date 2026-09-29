@@ -1,0 +1,20 @@
+<script>
+window.addEventListener("beforeprint", () => {
+  document.querySelectorAll(".panel-tabset").forEach(tabset => {
+    // Évite d'insérer les titres plusieurs fois si on imprime plusieurs fois
+    if (tabset.querySelector(".print-tab-title")) return;
+
+    const links = tabset.querySelectorAll(":scope > ul .nav-link, :scope > .nav .nav-link");
+    const panes = tabset.querySelectorAll(":scope > .tab-content > .tab-pane");
+    
+    links.forEach((link, i) => {
+      if (panes[i]) {
+        const title = document.createElement("h4");
+        title.className = "print-tab-title";
+        title.textContent = "▸ " + link.textContent.trim();
+        panes[i].prepend(title);
+      }
+    });
+  });
+});
+</script>
