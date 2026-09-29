@@ -1193,9 +1193,7 @@ vins.mfa$group$RV
 ```{r}
 #| label: plot-rv-heatmap
 #| echo: false
-
 library(ggplot2)
-library(reshape2)
 
 # 1. Sélection uniquement des groupes actifs + MFA
 groupes_actifs <- rownames(vins.mfa$group$coord)
@@ -1204,8 +1202,8 @@ selection <- c(groupes_actifs, nom_mfa)
 
 mat_rv_clean <- vins.mfa$group$RV[selection, selection]
 
-# 2. Conversion en format long
-df_rv <- melt(mat_rv_clean)
+# 2. Conversion en format long (remplace melt sans aucun package)
+df_rv <- as.data.frame(as.table(mat_rv_clean))
 colnames(df_rv) <- c("Groupe1", "Groupe2", "RV")
 
 # 3. Réorganisation des axes pour respecter la disposition matricielle (haut -> bas)
