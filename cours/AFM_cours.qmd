@@ -9,6 +9,11 @@ format:
   html:
     output-file: AFM_cours.html
 
+format-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "AFM_cours.pdf"
+
 bibliography: ../reference.bib
 ---
 

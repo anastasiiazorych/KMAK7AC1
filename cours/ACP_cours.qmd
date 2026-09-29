@@ -10,6 +10,10 @@ format:
   html:
     output-file: ACP_cours.html
 
+format-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "ACP_cours.pdf"
 
 bibliography: ../reference.bib
 ---

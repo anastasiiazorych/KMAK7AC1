@@ -98,9 +98,6 @@ format:
       - assets/print-clean.css
     include-in-header:
       - assets/unfold-panel.html
-    filters:
-      - assets/pdf-link.lua
-
     html-math-method: mathjax
     number-sections: true
     toc-depth: 3
