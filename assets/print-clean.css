@@ -14,8 +14,7 @@
     margin: 15mm 15mm 15mm 15mm;
   }
 
-  /* Masquer toute l'interface de navigation Quarto et les onglets Web */
-  #quarto-header,
+/* Masquer uniquement les éléments de navigation de Quarto */
   .navbar,
   #quarto-sidebar,
   #quarto-margin-sidebar,
@@ -26,6 +25,24 @@
   .panel-tabset > .nav-tabs,
   .panel-tabset > ul.nav {
     display: none !important;
+  }
+
+  /* Laisser le header visible mais masquer ses composants de navigation internes */
+  #quarto-header {
+    display: block !important;
+  }
+
+  #quarto-header nav,
+  #quarto-header .navbar-container {
+    display: none !important;
+  }
+
+  /* S'assurer que le titre reste parfaitement visible */
+  #quarto-header .title,
+  h1.title {
+    display: block !important;
+    visibility: visible !important;
+    color: #000 !important;
   }
 
   /* Égaliser la zone de contenu sur 100 % de la largeur */

@@ -7,7 +7,7 @@ format:
   revealjs:
     output-file: AFM_slides.html
   html:
-    output-file: AFM.html
+    output-file: AFM_cours.html
 
 bibliography: ../reference.bib
 ---

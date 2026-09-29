@@ -13,18 +13,18 @@ project:
   - index.qmd
   - resources.qmd
   - cours/index.qmd
-  - cours/SVD.qmd
-  - cours/ACP.qmd
-  - cours/AFC.qmd
-  - cours/ACM.qmd
-  - cours/AFM.qmd
+  - cours/SVD_cours.qmd
+  - cours/ACP_cours.qmd
+  - cours/AFC_cours.qmd
+  - cours/ACM_cours.qmd
+  - cours/AFM_cours.qmd
   - cours/presentation.qmd
   - td/1_ACP/TD.qmd
   - td/2_ACM/TD.qmd
   - tp/index.qmd
   - tp/markdown.qmd
   - tp/quarto.qmd
-
+  post-render: assets/make-pdf.sh
 
 
 website:
@@ -60,11 +60,11 @@ website:
       collapse-level: 3
       contents: 
         - cours/presentation.qmd
-        - cours/SVD.qmd
-        - cours/ACP.qmd
-        - cours/AFC.qmd
-        - cours/ACM.qmd
-        - cours/AFM.qmd
+        - cours/SVD_cours.qmd
+        - cours/ACP_cours.qmd
+        - cours/AFC_cours.qmd
+        - cours/ACM_cours.qmd
+        - cours/AFM_cours.qmd
 
     - id: TD
       collapse-level: 3
@@ -98,6 +98,8 @@ format:
       - assets/print-clean.css
     include-in-header:
       - assets/unfold-panel.html
+    filters:
+      - assets/pdf-link.lua
 
     html-math-method: mathjax
     number-sections: true

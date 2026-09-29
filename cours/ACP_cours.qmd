@@ -8,7 +8,7 @@ format:
     output-file: ACP_slides.html
   
   html:
-    output-file: ACP.html
+    output-file: ACP_cours.html
 
 
 bibliography: ../reference.bib

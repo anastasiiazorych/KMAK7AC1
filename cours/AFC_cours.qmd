@@ -8,7 +8,7 @@ format:
     output-file: AFC_slides.html
 
   html:
-    output-file: AFC.html
+    output-file: AFC_cours.html
 
 bibliography: ../reference.bib
 ---

@@ -8,7 +8,12 @@ format:
     output-file: SVD_slides.html
   
   html:
-    output-file: SVD.html
+    output-file: SVD_cours.html
+
+format-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "SVD_cours.pdf"
 
 bibliography: ../reference.bib
 ---
