@@ -8,12 +8,12 @@ format:
     output-file: ACP_slides.html
   
   html:
-    output-file: ACP_cours.html
+    output-file: ACP_topdf.html
 
 format-links:
   - text: "Version PDF"
     icon: file-pdf
-    href: "ACP_cours.pdf"
+    href: "ACP.pdf"
 
 bibliography: ../reference.bib
 ---
@@ -529,14 +529,14 @@ layout(
   margin = list(l = 40, r = 30, b = 85, t = 45),
 
   xaxis = list(
-    title = "X₁",
+    title = "$X_1$",
     range = c(-5, 5),
     scaleanchor = "y",
     scaleratio = 1
   ),
 
   yaxis = list(
-    title = "X₂",
+    title = "$X_2$",
     range = c(-7, 7)
   ),
 
@@ -546,7 +546,7 @@ layout(
       x = 0.15,
       y = -0.16,
       len = 0.7,
-      currentvalue = list(prefix = "Angle θ = "),
+      currentvalue = list(prefix = "Angle $\theta$ = "),
       steps = steps
     )
   )
@@ -555,7 +555,7 @@ layout(
 
 ```
 
-## Example jouet
+## Exemple jouet
 
 - La "meilleure" droite de projection est celle pour laquelle la structure du nuage est la mieux conservée après projection.
 
@@ -1126,7 +1126,7 @@ ggplot(eig, aes(x = axe, y = cum_variance, group = 1)) +
 
 
 
-**Méthode du seuil:** On peut choisir le plus petit $k$ pour lequel $i_k$ dépasse un seuil. Si on prend 0.90, dans l'example on a $i_1 = 0.824$ et $i_2 = 0.992$ ce qui donne 2 axes.
+**Méthode du seuil:** On peut choisir le plus petit $k$ pour lequel $i_k$ dépasse un seuil. Si on prend 0.90, dans l'exemple on a $i_1 = 0.824$ et $i_2 = 0.992$ ce qui donne 2 axes.
 
 **Méthode pratique:** ne retenir que les dimensions que l’on peut interpréter...
 

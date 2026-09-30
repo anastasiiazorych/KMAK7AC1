@@ -7,12 +7,12 @@ format:
   revealjs:
     output-file: AFM_slides.html
   html:
-    output-file: AFM_cours.html
+    output-file: AFM_topdf.html
 
 format-links:
   - text: "Version PDF"
     icon: file-pdf
-    href: "AFM_cours.pdf"
+    href: "AFM.pdf"
 
 bibliography: ../reference.bib
 ---

@@ -13,14 +13,15 @@ project:
   - index.qmd
   - resources.qmd
   - cours/index.qmd
-  - cours/SVD_cours.qmd
-  - cours/ACP_cours.qmd
-  - cours/AFC_cours.qmd
-  - cours/ACM_cours.qmd
-  - cours/AFM_cours.qmd
+  - cours/SVD.qmd
+  - cours/ACP.qmd
+  - cours/AFC.qmd
+  - cours/ACM.qmd
+  - cours/AFM.qmd
   - cours/presentation.qmd
   - td/1_ACP/TD.qmd
   - td/2_ACM/TD.qmd
+  - td/3_AFM/TD.qmd
   - tp/index.qmd
   - tp/markdown.qmd
   - tp/quarto.qmd
@@ -60,17 +61,18 @@ website:
       collapse-level: 3
       contents: 
         - cours/presentation.qmd
-        - cours/SVD_cours.qmd
-        - cours/ACP_cours.qmd
-        - cours/AFC_cours.qmd
-        - cours/ACM_cours.qmd
-        - cours/AFM_cours.qmd
+        - cours/SVD.qmd
+        - cours/ACP.qmd
+        - cours/AFC.qmd
+        - cours/ACM.qmd
+        - cours/AFM.qmd
 
     - id: TD
       collapse-level: 3
       contents:
         - td/1_ACP/TD.qmd
         - td/2_ACM/TD.qmd
+        - td/3_AFM/TD.qmd
     
     - id: TP
       collapse-level: 3
@@ -98,7 +100,7 @@ format:
       - assets/print-clean.css
     include-in-header:
       - assets/unfold-panel.html
-    html-math-method: mathjax
+    html-math-method: katex
     number-sections: true
     toc-depth: 3
     code-fold: false

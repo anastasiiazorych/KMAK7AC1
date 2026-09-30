@@ -8,12 +8,12 @@ format:
     output-file: AFC_slides.html
 
   html:
-    output-file: AFC_cours.html
+    output-file: AFC_topdf.html
 
 format-links:
   - text: "Version PDF"
     icon: file-pdf
-    href: "AFC_cours.pdf"
+    href: "AFC.pdf"
 
 bibliography: ../reference.bib
 ---

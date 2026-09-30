@@ -8,12 +8,12 @@ format:
     output-file: ACM_slides.html
   
   html:
-    output-file: ACM_cours.html
+    output-file: ACM_topdf.html
 
 format-links:
   - text: "Version PDF"
     icon: file-pdf
-    href: "ACM_cours.pdf"
+    href: "ACM.pdf"
 
 bibliography: ../reference.bib
 ---

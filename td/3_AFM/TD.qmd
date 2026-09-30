@@ -1,0 +1,20 @@
+---
+title: "TD 3 -- Analyse Factorielle Multiple"
+
+format: 
+  html:
+    output-file: TD_AFM_topdf.html
+
+other-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "TD_AFM.pdf"
+---
+
+```{r}
+#| label: setup
+#| include: false
+source("../../R/functions.R")
+```
+
+# Exercice 1. 

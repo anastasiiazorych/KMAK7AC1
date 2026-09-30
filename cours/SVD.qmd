@@ -8,12 +8,12 @@ format:
     output-file: SVD_slides.html
   
   html:
-    output-file: SVD_cours.html
+    output-file: SVD_topdf.html
 
 format-links:
   - text: "Version PDF"
     icon: file-pdf
-    href: "SVD_cours.pdf"
+    href: "SVD.pdf"
 
 bibliography: ../reference.bib
 ---
@@ -85,8 +85,7 @@ Les $s_j$ sont les **valeurs singulières** de $X$ ; les $u_j$ (resp. $v_j$) son
 
 ::: {.callout-note title="Propriété variationnelle de la plus grande valeur singulière"}
 $$
-s_1=\max_{\substack{u\in\mathbb{R}^n,\ v\in\mathbb{R}^p \\ \|u\|=\|v\|=1}} u^\top Xv.
-$$
+s_1 = \max\limits_{\substack{u \in \mathbb{R}^n, \, v \in \mathbb{R}^p \\ \|u\| = \|v\| = 1}} u^\top Xv.$$
 :::
 
 Le lagrangien est

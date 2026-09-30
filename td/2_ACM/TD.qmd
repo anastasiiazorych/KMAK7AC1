@@ -1,7 +1,14 @@
 ---
 title: "TD 2 -- Analyse Factorielle des Correspondences et Analyse des Correspondances Multiples"
 
-format: html
+format: 
+  html:
+    output-file: TD_AFC-ACM_topdf.html
+
+other-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "TD_AFC-ACM.pdf"
 ---
 
 ```{r}
@@ -10,7 +17,7 @@ format: html
 source("../../R/functions.R")
 ```
 
-# Exercice 1. AFC et SVD généralisée
+## Exercice 1. AFC et SVD généralisée
 
 Il s'agit d'un tableau de contingence croisant 5 catégories de salariés (en lignes) et 4 catégories de fumeurs (en colonnes) au sein d'une entreprise :
 
@@ -229,7 +236,7 @@ print_table(res$col$contrib)
 
 
 
-# Exercice 2. 
+## Exercice 2. 
 
 On considère un jeu de données référençant $1\,044$ passagers du *Titanic*, décrivant les variables suivantes :
 

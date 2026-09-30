@@ -1,7 +1,15 @@
 ---
 title: "TD 1 -- Analyse en Composantes Principales"
 
-format: html
+format: 
+  html:
+    output-file: TD_ACP_topdf.html
+
+other-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "TD_ACP.pdf"
+
 ---
 
 ```{r}
@@ -10,7 +18,7 @@ format: html
 source("../../R/functions.R")
 ```
 
-# Exercice 1. Un peu de calcul matriciel
+## Exercice 1. Un peu de calcul matriciel
 
 On considère la matrice
 
@@ -68,7 +76,7 @@ représenter sur le cercle des corrélations dans le plan des deux premières
 composantes.
 
 
-# Exercice 2: Analyse sensorielle
+## Exercice 2. Analyse sensorielle
 
 On dispose de 10 mesures effectuées sur 10 cidres différents, afin d'évaluer
 leur qualité olfacto-gustative.
@@ -446,7 +454,7 @@ plot_ly(
   
   c. Proposer des profils de cidres, en précisant leurs caractéristiques principales.
 
-## Exercice 3
+## Exercice 3.
 
 On va considérer le jeu de données `decathlon` disponible dans le paquet `FactoMineR`, qui s’intéresse en particulier aux performances d’athlètes pour les 10 épreuves du décathlon, dans deux événements différents : les Jeux Olympiques de 2004 et le Décastar de 2004. On ne va considérer ici que cette dernière épreuve, dont on stockera les mesures
 dans un `data.frame` nommé decastar

@@ -23,10 +23,10 @@ convert_one() {
   fi
 
   # FILTRE STRICT : uniquement les fichiers se terminant par _cours.html
-  if [[ "$target" == *"_cours.html" ]]; then
+  if [[ "$target" == *"_topdf.html" ]]; then
     if [ -f "$target" ]; then
       abs_html="$(realpath "$target")"
-      pdf_file="${abs_html%.html}.pdf"
+      pdf_file="${abs_html%_topdf.html}.pdf"
 
       echo "📄 Conversion PDF de : $abs_html"
 
