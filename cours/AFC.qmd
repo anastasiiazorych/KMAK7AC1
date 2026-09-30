@@ -192,13 +192,13 @@ Le tableau des profils lignes $L$ est obtenu en divisant chaque ligne $i$ de $F$
 ::: {.column}
 
 ::: {.data-table style="font-size: .55em;"}
-|     | $1$ | $\cdots$ | $s$ | $\cdots$ | $m$ |
+|     | $1$ | $\cdots$ | $s$ | $\cdots$ | $m$ | [Total]{.orange} |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| $1$ | $f_{11}/f_{1.}$ | $\cdots$ | $f_{1s}/f_{1.}$ | $\cdots$ | $f_{1m}/f_{1.}$ |
-| $\vdots$ | $\vdots$ |  | $\vdots$ |  | $\vdots$ |
-| $i$ | $f_{i1}/f_{i\cdot}$ | $\cdots$ | $f_{is}/f_{i\cdot}$ | $\cdots$ | $f_{im}/f_{i\cdot}$ |
-| $\vdots$ | $\vdots$ |  | $\vdots$ |  | $\vdots$ |
-| $q$ | $f_{q1}/f_{q.}$ | $\cdots$ | $f_{qs}/f_{q.}$ | $\cdots$ | $f_{qm}/f_{q.}$ |
+| $1$ | $f_{11}/f_{1.}$ | $\cdots$ | $f_{1s}/f_{1.}$ | $\cdots$ | $f_{1m}/f_{1.}$ | 1 |
+| $\vdots$ | $\vdots$ |  | $\vdots$ |  | $\vdots$ | $\vdots$ |
+| $i$ | $f_{i1}/f_{i\cdot}$ | $\cdots$ | $f_{is}/f_{i\cdot}$ | $\cdots$ | $f_{im}/f_{i\cdot}$ | 1 |
+| $\vdots$ | $\vdots$ |  | $\vdots$ |  | $\vdots$ | $\vdots$ |
+| $q$ | $f_{q1}/f_{q.}$ | $\cdots$ | $f_{qs}/f_{q.}$ | $\cdots$ | $f_{qm}/f_{q.}$ | 1 |
 :::
 
 
@@ -213,7 +213,7 @@ On note $\ell_{is}=\tfrac{f_{is}}{f_{i\cdot}}=\tfrac{n_{is}}{n_{i\cdot}}$ le ter
 :::
 
 
-- **Métrique des poids :** les profils lignes forment un nuage de $q$ vecteurs de $\mathbb{R}^m$, pondérés par $D_r\in\mathbb{R}^{q\times q}$. Le profil ligne moyen (centre de gravité du nuage) est [$c=\sum_{i=1}^{q} f_{i\cdot}\, L_{i:} \in \mathbb{R}^m$]{.blue} (marges des colonnes). On peut alors centrer la matrice des profils lignes^[Centrer dans cette métrique $\sum_i f_{i\cdot}\, L^c_{i:} = 0_{\mathbb{R}^m}$ revient à mesurer l'écart à l'hypothèse d'indépendance stochastique ($f_{is} = f_{i\cdot}f_{\cdot s}$).],
+- **Métrique des poids :** les profils lignes forment un nuage de $q$ vecteurs de $\mathbb{R}^m$. Le profil ligne moyen pondérés par $D_r\in\mathbb{R}^{q\times q}$ (centre de gravité du nuage) est [$c=\sum_{i=1}^{q} f_{i\cdot}\, L_{i:} \in \mathbb{R}^m$]{.blue} (marges des colonnes). On peut alors centrer la matrice des profils lignes^[Centrer dans cette métrique $\sum_i f_{i\cdot}\, L^c_{i:} = 0_{\mathbb{R}^m}$ revient à mesurer l'écart à l'hypothèse d'indépendance stochastique ($f_{is} = f_{i\cdot}f_{\cdot s}$).],
 
   $$
   L^c = \left(\tfrac{f_{is}}{f_{i\cdot}}-c_{s}\right)_{i,s}^{}
@@ -291,6 +291,7 @@ Le tableau des profils colonnes $C$ est obtenu en divisant chaque colonne $s$ de
 | $i$ | $f_{i1}/f_{.1}$ | $\cdots$ | $f_{is}/f_{\cdot s}$ | $\cdots$ | $f_{im}/f_{.m}$ |
 | $\vdots$ | $\vdots$ |  | $\vdots$ |  | $\vdots$ |
 | $q$ | $f_{q1}/f_{.1}$ | $\cdots$ | $f_{qs}/f_{\cdot s}$ | $\cdots$ | $f_{qm}/f_{.m}$ |
+| [Total]{.blue}| 1     |    $\cdots$ | 1 | $\cdots$ | 1 |
 :::
 
 
@@ -305,7 +306,7 @@ On note $c_{is}=\tfrac{f_{is}}{f_{\cdot s}}=\tfrac{n_{is}}{n_{\cdot s}}$ le term
 :::
 
 
-- **Métrique des poids :** les profils colonnes forment un nuage de $m$ vecteurs de $\mathbb{R}^q$, pondérés par $D_c\in\mathbb{R}^{m\times m}$. Le profil colonne moyen (centre de gravité du nuage) est [$r=\sum_{s=1}^{m} f_{\cdot s}\, C_{:s} \in\mathbb{R}^q$]{.orange} (marges des lignes). On peut alors centrer la matrice des profils colonnes^[Centrer dans cette métrique $\sum_s f_{\cdot s}\, C^c_{:s} = 0_{\mathbb{R}^q}$ revient à mesurer l'écart à l'hypothèse d'indépendance stochastique ($f_{is} = f_{i\cdot}f_{\cdot s}$).]:
+- **Métrique des poids :** les profils colonnes forment un nuage de $m$ vecteurs de $\mathbb{R}^q$. Le profil colonne moyen pondérés par $D_c\in\mathbb{R}^{m\times m}$ (centre de gravité du nuage) est [$r=\sum_{s=1}^{m} f_{\cdot s}\, C_{:s} \in\mathbb{R}^q$]{.orange} (marges des lignes). On peut alors centrer la matrice des profils colonnes^[Centrer dans cette métrique $\sum_s f_{\cdot s}\, C^c_{:s} = 0_{\mathbb{R}^q}$ revient à mesurer l'écart à l'hypothèse d'indépendance stochastique ($f_{is} = f_{i\cdot}f_{\cdot s}$).]:
   $$
   C^c  = \left(\tfrac{f_{is}}{f_{\cdot s}}-r_i \right)_{i,s}^{}
       = \left(\tfrac{f_{is}}{f_{\cdot s}}-f_{i\cdot}\right)_{i,s}^{}
@@ -587,7 +588,7 @@ $$
 - La matrice $m \times k$ des coordonnées des profils-colonnes projetés sur $\text{Vect}(u_1, \dots, u_k)$ est  
 
 $$
-Y = L^\top D^{-1}_r U_k
+Y = C^\top D^{-1}_r U_k
 $$
 
 - $Y_{:\alpha}$ est la $\alpha$-ième composante principale des profils-colonnes, de moyenne nulle ($\overline{Y}_{:\alpha} = 0$) et de variance $\operatorname{Var}(Y_{:\alpha}) = \lambda_\alpha$.
