@@ -303,7 +303,7 @@ plot_ly() |>
 
   a. Quels seraient les variables mal représentées dans le premier plan principal ? Pourquoi ?
   
-  b. Quels seraient les variables les plus corrélés (positivement ou négativement) au caractère alcool ? Celles qui le seraient le moins ?
+  b. Quels seraient les variables les plus corrélées (positivement ou négativement) au caractère alcool ? Celles qui le seraient le moins ?
 
   c. Quels seraient les caractères qui contribuent le plus au premier axe principal ?
   
