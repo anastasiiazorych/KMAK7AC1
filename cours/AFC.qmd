@@ -442,7 +442,8 @@ ggplot(Z_long, aes(x = modalite_colonne,
     axis.title = element_text(size = 22),
     axis.text = element_text(size = 20),
     legend.position = "bottom",
-    legend.direction = "horizontal"
+    legend.direction = "horizontal",
+    legend.key.width = grid::unit(2, "cm")
   )
 ```
 
@@ -452,7 +453,7 @@ ggplot(Z_long, aes(x = modalite_colonne,
 
 Sur cet exemple :
 
-- La fréquence des bruns aux yeux marron est 78% au-dessus de ce qu’elle serait s’il y avait indépendance entre les deux variables couleurs des yeux et couleur des cheveux. De plus ces deux modalités s’attirent (le vérifier sur les tableaux de profils ligne et colonne).
+- La fréquence des bruns aux yeux marron est 18% au-dessus de ce qu’elle serait s’il y avait indépendance entre les deux variables couleurs des yeux et couleur des cheveux. De plus ces deux modalités s’attirent (le vérifier sur les tableaux de profils ligne et colonne).
 
 - La fréquence des blonds aux yeux marron est 87% au-dessous de ce qu’elle serait s’il y avait indépendance entre les deux variables. En plus ces deux modalités se repoussent (le vérifier sur les tableaux de profils ligne et colonne).
 
