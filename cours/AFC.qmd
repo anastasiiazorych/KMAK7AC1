@@ -443,7 +443,7 @@ ggplot(Z_long, aes(x = modalite_colonne,
     axis.text = element_text(size = 20),
     legend.position = "bottom",
     legend.direction = "horizontal",
-    legend.key.width = grid::unit(2, "cm")
+    legend.key.width = grid::unit(1.5, "cm")
   )
 ```
 
