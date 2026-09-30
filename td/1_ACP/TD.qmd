@@ -88,8 +88,7 @@ cidre <- read.csv("data/cidre.csv", header = TRUE, sep = ";")
 rownames(cidre) <- cidre$nom
 cidre$nom <- NULL
 
-cidre |>
-  print_table()
+print_table(cidre, , max.col.width = "4.5em")
 ```
 
 
@@ -469,8 +468,7 @@ data(decathlon)
 decastar = decathlon[decathlon$Competition == 'Decastar', ]
 # Drop useless competition column
 decastar = decastar[ , colnames(decastar) != 'Competition']
-decastar |>
-  print_table()
+print_table(decastar, max.col.width = "3.5em")
 ```
 
 1. Quel est l’intérêt d’effectuer une ACP ici ? Sur quelles variables ?
@@ -490,8 +488,7 @@ deca.acp = PCA(decastar[, 1:11], quanti.sup= 11 )
 #| echo: false
 
 
-deca.acp$eig |>
-  print_table()
+print_table(deca.acp$eig)
 ```
 
 

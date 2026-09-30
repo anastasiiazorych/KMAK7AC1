@@ -1,4 +1,4 @@
-print_table <- function(data, digits = 3, caption = "", scroll = 0) {
+print_table <- function(data, digits = 3, caption = "", scroll = 0, max.col.width = NULL) {
   data <- as.data.frame(data)
 
   if (digits >= 0) {
@@ -20,13 +20,34 @@ print_table <- function(data, digits = 3, caption = "", scroll = 0) {
     table.attr = 'class="table" style="width: auto; max-width: 100%; margin: 0 auto; table-layout: auto;"'
   )
 
-  # Si scroll est un nombre positif, on applique la hauteur max en em
-  if (is.numeric(scroll) && scroll > 0) {
-    style <- sprintf("max-height: %sem; overflow-y: auto; overflow-x: auto; display: block;", scroll)
-    tbl <- htmltools::HTML(sprintf('<div style="%s">%s</div>', style, tbl))
+  # Unique container ID generation
+  has_scroll <- is.numeric(scroll) && scroll > 0
+  has_max_width <- !is.null(max.col.width)
+
+  if (has_scroll || has_max_width) {
+    container_id <- basename(tempfile(pattern = "tbl_"))
+    css_style <- ""
+    
+    # Target all columns EXCEPT the first one using :not(:first-child)
+    if (has_max_width) {
+      width_str <- if (is.numeric(max.col.width)) sprintf("%spx", max.col.width) else max.col.width
+      css_style <- sprintf(
+        '<style>#%s th:not(:first-child), #%s td:not(:first-child) { max-width: %s; overflow-wrap: break-word; word-wrap: break-word; }</style>',
+        container_id, container_id, width_str
+      )
+    }
+
+    # Scroll container styling
+    div_style <- ""
+    if (has_scroll) {
+      div_style <- sprintf(' style="max-height: %sem; overflow-y: auto; overflow-x: auto; display: block;"', scroll)
+    }
+
+    # Wrap inside container div
+    tbl <- sprintf('<div id="%s"%s>%s%s</div>', container_id, div_style, css_style, tbl)
   }
 
-  return(tbl)
+  return(htmltools::HTML(tbl))
 }
 
 

@@ -4,7 +4,7 @@ title: "Supports de cours"
 format: html
 ---
 
-1. [Analyse en Composantes Principales](ACP_cours.qmd)
-2. [Analyse des Correspondances Multiples](ACM_cours.qmd)
-3. [Analyse Factorielle Multiple](AFM_cours.qmd)
+1. [Analyse en Composantes Principales](ACP.qmd)
+2. [Analyse des Correspondances Multiples](ACM.qmd)
+3. [Analyse Factorielle Multiple](AFM.qmd)
 4. Apprentissage non supervisé
