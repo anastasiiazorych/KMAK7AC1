@@ -17,4 +17,300 @@ other-links:
 source("../../R/functions.R")
 ```
 
-# Exercice 1. 
+## Exercice 1.
+
+On considère des données fournies par l’OCDE sur des indicateurs de vivre mieux (voir le site de l’OCDE). Les données concernent 16 pays. On donne 22 indicateurs qui peuvent être répartis dans 5 grands domaines permettant
+de mesurer le "vivre mieux" :
+
+- Bien-être matériel : Logements sans équipements sanitaires de base (`HO_BASE`), Coût du logement (`HO_HISH`), Nombre de pièces par personne (`HO_NUMR`), Revenu disponible des ménages (`IW_HADI`), Patrimoine financier des ménages (`IW_HNFW`) ;
+
+- Emploi : Taux d’emploi (`JE_EMPL`), Insécurité de l’emploi (`JE_LMIS`), Taux de chômage de longue durée (`JE_LTUR`), Revenus moyens d’activité (`JE_PEARN`), Horaires de travail lourds (`WL_EWLH`) ;
+
+- Satisfaction : Qualité du réseau social (`SC_SNTWS`), Satisfaction à l’égard de la vie (`SW_LIFS`), Temps consacré
+aux loisirs et à soi (`WL_TNOW`)
+
+- Santé et sécurité : Pollution atmosphérique (`EQ_AIRP`), Qualité de l’eau (`EQ_WATER`), Espérance de vie (`HS_LEB`),
+Auto-évaluation de l’état de santé (`HS_SFRH`), Sentiment de sécurité seul la nuit (`PS_FSAFEN`), Taux d’homicides
+(`PS_REPH`)
+
+- Enseignement : Niveau d’instruction (`ES_EDUA`), Compétences des élèves (`ES_STCS`), Années de scolarité(`ES_EDUEX`)
+
+On souhaite comparer le vivre mieux de ces 16 pays en prenant en compte l’ensemble des 5 grands domaines de mesures du vivre mieux.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(FactoMineR)
+
+
+fname <- file.path(get_script_dir(), "/data/OECD.csv")
+df_raw <- read.csv(fname, stringsAsFactors = FALSE)
+
+```
+
+```{r}
+
+# Codes ISO des 16 pays de l'exercice
+codes_16 <- c("AUT", "BEL", "CAN", "FIN", "FRA", "DEU", "GRC", "HUN", "IRL", "ITA", "NLD", "NOR", "POL", "GBR", "USA", "EST")
+
+var22 <- c("HO_BASE", "HO_HISH", "HO_NUMR", "IW_HADI", "IW_HNFW", "JE_EMPL", "JE_LMIS", "JE_LTUR", "JE_PEARN", "WL_EWLH", "SC_SNTWS", "SW_LIFS", "WL_TNOW", "EQ_AIRP", "EQ_WATER", "HS_LEB", "HS_SFRH", "PS_FSAFEN", "PS_REPH", "ES_EDUA", "ES_STCS", "ES_EDUEX")
+
+
+# 1. Traitement et pivot
+ocde_16 <- df_raw %>%
+  filter(LOCATION %in% codes_16) %>%
+  filter(INDICATOR %in% var22) %>%
+  filter(MEASURE == "L" | INEQUALITY == "TOT") %>%
+  select(LOCATION, INDICATOR, OBS_VALUE) %>%
+  distinct(LOCATION, INDICATOR, .keep_all = TRUE) %>%
+  pivot_wider(names_from = INDICATOR, values_from = OBS_VALUE)
+
+# 2. Réordonner les colonnes selon var22 (en gardant les colonnes existantes)
+variables_presentes <- intersect(var22, names(ocde_16))
+ocde_16 <- ocde_16 %>% 
+  select(LOCATION, all_of(variables_presentes))
+
+# 3. Passer LOCATION en rownames (méthode moderne sans NULL)
+ocde_16 <- ocde_16 %>% 
+  tibble::column_to_rownames("LOCATION")
+
+```
+
+```{r}
+#| eval: true
+
+ocde.mfa <- MFA(
+  ocde_16,
+  group = c(5, 5, 3, 6, 3),
+  type = rep("s", 5),
+  name.group = c("Materiel", "Emploi", "Satisfaction", "Sante_Securite", "Enseignement"),
+  graph = FALSE
+)
+
+```
+
+
+1. Résumer la méthodologie de mise en œuvre de l’AFM pour étudier les individus et les variables.
+
+2. On va se concentrer sur le premier plan principal. On donne la représentation des individus et des variables ci-dessous, ainsi que les `cos2` des individus et des variables
+
+
+::: {.columns}
+
+::: {.column}
+
+```{r}
+print_table(ocde.mfa$ind$cos2[,1:2])
+```
+:::
+
+::: {.column}
+
+```{r}
+print_table(ocde.mfa$quanti.var$cos2[,1:2])
+```
+:::
+
+:::
+
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+#| out-width: "50%"
+
+
+library(factoextra)
+
+# Représentation des individus avec gradient selon le cos2
+fviz_mfa_ind(
+  ocde.mfa,
+  col.ind = "cos2",
+  invisible= c('quali.sup', "quanti.sup"),
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  repel = TRUE,
+  labelsize = 7
+) +
+  labs(
+    title = "Plan factoriel (1-2) des individus",
+    color = expression(cos^2)
+  ) + theme_metropolis + 
+theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.02, 0.02),
+    legend.justification = c("left", "bottom"))
+```
+
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+#| out-width: "50%"
+
+
+# Cercle des corrélations de l'ACP pondérée globale dans l'AFM
+fviz_mfa_var(
+  ocde.mfa,
+  repel = TRUE,
+  choice = "quanti.var", # Affiche les corrélations des variables quantitatives
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  legend.title = "Groupe",
+  title = "Cercle des corrélations de l'AFM",
+  labelsize = 7
+  
+) + 
+theme_metropolis + 
+theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.02, 0.02),
+    legend.justification = c("left", "bottom"))
+
+```
+
+
+
+Faîtes une première interprétation des individus et des variables dans ce plan.
+
+
+3. On va à présent comparer les 5 groupes de variables, en commençant par les représenter dans le 1er plan principal, ainsi que les coefficients $\mathcal{L}_g$ et $RV$.
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 8
+#| out.width: "75%"
+
+
+plot.MFA(
+  ocde.mfa,
+  choix = "group",
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  graph.type = "ggplot",
+  legend.title = "Groupe",
+  cex = 1.4
+) +
+  theme_metropolis
+
+```
+
+
+```{r}
+print_table(ocde.mfa$group$Lg['MFA',1:5, drop=FALSE],  max.col.width ="7em")
+```
+```{r}
+print_table(ocde.mfa$group$RV,  max.col.width ="7em")
+```
+
+  (a) À quoi correspondent les coordonnées associées à chaque groupe sur le graphique de gauche ?
+  (b) Rappeler ce que calculent les coefficients $\mathcal{L}_g$ et $RV$ et interpréter les résultats.
+
+4. On s’intéresse aux inerties axiales, en commençant par le calcul des ratios d’inerties des 2 premières directions
+
+```{r}
+ocde.mfa$inertia.ratio[1:2]
+```
+
+  (a) Rappeler les inerties constituant ces ratios.
+  (b) Que pourrait-on dire à partir de ces mesures ?
+
+5. On fait apparaître les points partiels associés au Canada, la France et la Grèce :
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+#| out.width: "75%"
+
+
+library(factoextra)
+# 1. Générer le graphique dans un objet
+p <- fviz_mfa_ind(
+  ocde.mfa,
+  partial = c("FRA", "CAN", "GRC"),
+ palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  repel = TRUE,
+  labelsize = 6
+) + theme_metropolis + 
+theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.02, 0.02),
+    legend.justification = c("left", "bottom"))
+
+# 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
+for (i in seq_along(p$layers)) {
+  if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
+    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
+    p$layers[[i]]$aes_params$linewidth <- 1.2
+  }
+}
+
+# 3. Afficher le résultat
+p
+```
+
+  (a) Rappeler ce à quoi correspondent les points partiels.
+  (b) Mettre cette visualisation en parallèle des informations sur les inerties intra associées à ces 3 pays ci-dessous
+
+
+::: {.columns}
+
+::: {.column}
+
+```{r}
+#| echo: false
+
+
+print_table(ocde.mfa$ind$within.inertia[c("CAN", "FRA", "GRC"),1:3])
+```
+
+:::
+
+::: {.column}
+
+```{r}
+#| echo: false
+
+lignes_select <- grep("CAN|FRA|GRC", rownames(ocde.mfa$ind$coord.partiel))
+
+print_table(ocde.mfa$ind$within.partial.inertia[lignes_select,1:3])
+```
+
+
+
+:::
+
+:::
+
+
+6. On cherche finalement à mettre en parallèle les résultats des ACPs propres à chaque groupe de variable
+  (a) Commencer par rappeler la méthodologie pour faire cette comparaison.
+  (b) On représente ci-dessous le graphique associé à cette méthodologie. Commenter.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 9
+#| echo: false
+
+# 1. Extraction dynamique des noms correspondant aux axes 1 et 2 de chaque groupe
+axes_1_2 <- grep("Dim1|Dim2", rownames(ocde.mfa$partial.axes$coord), value = TRUE)
+
+# 2. Graphique des axes partiels restreint aux dimensions 1 et 2
+fviz_mfa_axes(
+  ocde.mfa,
+  select.axes = list(name = axes_1_2),  # Sélectionne uniquement Dim.1 et Dim.2
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),                 
+  repel = TRUE,
+  legend.title = "Domaines"
+) +
+  labs(
+    title = "Cercle des axes partiels (Dimensions 1 et 2)",
+    subtitle = "Comparaison des deux premiers axes des ACP séparées"
+  ) +
+  theme_metropolis + 
+theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.02, 0.02),
+    legend.justification = c("left", "bottom"))
+```

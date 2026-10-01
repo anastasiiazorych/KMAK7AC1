@@ -119,6 +119,9 @@ format:
   revealjs:
     theme: assets/metropolis.scss
     css: assets/table.css
+    default-image-extension: svg
+    html-math-method:
+      method: katex
     width: 1024
     height: 768
     slide-level: 2

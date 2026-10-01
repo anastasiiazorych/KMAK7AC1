@@ -87,7 +87,17 @@
     font-size: 1.5rem !important; /* ~16.5px */
     margin: 0 0 0.6rem 0 !important;
     padding-bottom: 0.25rem !important;
+  }
+
+  h1 {
     border-bottom: 2px solid #eb811b !important; /* Orange Metropolis */
+  }
+
+  h1.title {
+    font-size: 1.8rem !important;
+    text-align: center !important;
+    padding-bottom: 1rem !important;
+    border-bottom: none !important;
   }
 
   h2 {
