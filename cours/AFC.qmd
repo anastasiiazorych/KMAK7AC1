@@ -884,11 +884,15 @@ plot(
    - **Seuil de Benzécri :** conserver les axes où $\lambda_\alpha > \frac{1}{r}$.
 
 3. **Interprétation des modalités**
-   - **$\operatorname{CTR}_{i\alpha}$ (Contributions) :** quelles modalités *créent* l'axe.
-   - **$\cos^2_{i\alpha}$ (Qualité) :** si l'axe *explique* bien la modalité.
+   - **$\operatorname{CTR}_{\alpha}(\cdot)$ (Contributions) :** quelles modalités *créent* l'axe.
+   - **$\cos^2_{\alpha}(\cdot)$ (Qualité) :** si l'axe *explique* bien la modalité.
 
 
 ## Contributions absolues ($\text{CTR}$)
+
+::: {.panel-tabset}
+
+### Définition
 
 Pour un axe factoriel $\alpha$, la contribution d'une modalité mesure sa part dans l'inertie de cet axe ($\lambda_\alpha$) 
 
@@ -900,8 +904,6 @@ $$
 \quad \text{avec} \quad \sum_i \operatorname{CTR}_\alpha(i) = \sum_s \operatorname{CTR}_\alpha(s) = 1
 $$
 
-### Propriétés et interprétation
-
 - **Rôle :** Identifie les modalités **responsables de la construction** de l'axe $\alpha$ (donne son sens à l'axe).
 - **Règle de décision :** Une modalité est contributive si sa contribution excède le poids moyen : en lignes, si on a $\operatorname{CTR}_\alpha(i) > \tfrac{1}{q}$; en colonnes, si on a $\operatorname{CTR}_\alpha(s) > \tfrac{1}{m}$
 
@@ -910,8 +912,26 @@ $$
 En AFC, un point très éloigné de l'origine n'est pas forcément un contributeur majeur : la contribution dépend du **produit** entre l'éloignement ($X_{i\alpha}^2$) et la masse de la modalité ($f_{i\cdot}$). Une modalité rare très excentrée peut avoir une contribution faible.
 :::
 
+### En R
+
+```{r}
+print_table(res.ca$row$contrib)
+```
+
+
+```{r}
+print_table(res.ca$col$contrib)
+```
+
+
+:::
+
+
 
 ## Qualité de représentation ($\cos^2$)
+::: {.panel-tabset}
+
+### Définition
 
 Le $\cos^2$ mesure la qualité de projection d'une modalité sur l'axe factoriel $\alpha$ :
 
@@ -925,11 +945,26 @@ $$
 
 où $d^2_{D_r^{-1}}(L_{i:}, c^\top)$ est la distance du $\chi^2$ entre le profil-ligne $L_{i:}$ et le profil moyen $c$.
 
-### Règles d'interprétation
 
 - **Axe bien représenté :** On n'interprète la position d'un point sur un axe que si son $\cos^2_\alpha$ est élevé (proximité réelle, non un artefact de projection).
 - **Proximité Intra-variable :** Deux modalités d'une **même variable** proches et bien représentées ont des profils similaires.
 - **Proximité Inter-variables :** La proximité entre une modalité ligne et une colonne s'interprète uniquement via les **relations barycentriques** (attraction / liaison positive).
+
+
+### En R
+
+```{r}
+print_table(res.ca$row$cos2)
+```
+
+
+```{r}
+print_table(res.ca$col$cos2)
+```
+
+
+:::
+
 
 ## Références
 

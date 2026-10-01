@@ -123,13 +123,14 @@ On travaille sur des tableaux de données où
 
 Effectuer directement une ACP classique sur le tableau, en ignorant la structure en groupe des variables ?  
 
-Exemple jouet : 11 variables séparées en 3 groupes
+- **Exemple jouet:** On dispose de 11 variables réparties dans 3 groupes distincts :
 
-On dispose de 11 variables réparties dans 3 groupes distincts :
+  - [**Groupe A :** $\{A_1, A_2, A_3, A_4, A_5\}$]{.blue}: variables très fortement corrélées entre elles.
+  - [**Groupe B :** $\{B_1, B_2, B_3\}$:]{.orange} variables très faiblement corrélées entre elles.
+  - **Groupe C :** $\{C_1, C_2, C_3\}$: variables très faiblement corrélées entre elles.
 
-- [**Groupe A :** $\{A_1, A_2, A_3, A_4, A_5\}$]{.blue}: variables très fortement corrélées entre elles.
-- [**Groupe B :** $\{B_1, B_2, B_3\}$:]{.orange} variables très faiblement corrélées entre elles.
-- **Groupe C :** $\{C_1, C_2, C_3\}$: variables très faiblement corrélées entre elles.
+- **Conséquence:** Les groupes sont déséquilibrés du point de vue des liaisons. Le groupe A va très fortememt contribuer au premier Axe factoriel. La structur de dépendance des autres groupes ne sera pas visible sur le premier plan factoriel.
+
 
 ### Groupe A
 
@@ -181,17 +182,6 @@ library(FactoMineR)
 library(factoextra)
 library(ggplot2)
 
-theme_afm <- theme_minimal(base_size = 18) +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    axis.title = element_text(size = 18),
-    axis.text = element_text(size = 16),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 15),
-    legend.position = c(0.98, 0.98),
-    legend.justification = c("right", "top")
-  )
-
 acp_A <- PCA(A, graph=FALSE)
 
 
@@ -199,8 +189,9 @@ fviz_pca_var(
   acp_A, 
   repel = TRUE,
   col.var = "#e67e22", # Rouge (A), Bleu (B), Vert (C)
-  title = "ACP sur les variables du Groupe A"
-) + theme_afm
+  title = "ACP sur les variables du Groupe A",
+  labelsize = 7
+) + theme_metropolis
 ```
 
 
@@ -212,9 +203,9 @@ fviz_pca_var(
 print_table(acp_A$eig[1:5, 1:2])
 ```
 
-
+Contrôle des corrélations
 ```{r}
-# --- Contrôle des corrélations ---
+#| echo: false
 cat("Corrélation moyenne interne A :", round(mean(abs(cor(A)[lower.tri(cor(A))])), 2), "\n")
 
 ```
@@ -241,8 +232,9 @@ fviz_pca_var(
   acp_B,
   repel = TRUE,
   col.var = "#377EB8",
-  title = "ACP sur les variables du Groupe B"
-) + theme_afm
+  title = "ACP sur les variables du Groupe B",
+  labelsize = 7
+) + theme_metropolis
 ```
 
 
@@ -255,9 +247,9 @@ print_table(acp_B$eig[1:3, 1:2])
 
 ```
 
+Contrôle des corrélations
 ```{r}
-
-# --- Contrôle des corrélations ---
+#| echo: false
 cat("Corrélation moyenne interne B :", round(mean(abs(cor(B)[lower.tri(cor(B))])), 2), "\n")
 ```
 
@@ -284,8 +276,9 @@ fviz_pca_var(
   acp_C,
   repel = TRUE,
   col.var = "#000000",
-  title = "ACP sur les variables du Groupe C"
-) + theme_afm
+  title = "ACP sur les variables du Groupe C",
+  labelsize = 7
+) + theme_metropolis
 ```
 
 :::
@@ -296,9 +289,9 @@ fviz_pca_var(
 print_table(acp_C$eig[1:3, 1:2])
 
 ```
-
+Contrôle des corrélations
 ```{r}
-# --- Contrôle des corrélations ---
+#| echo: false
 cat("Corrélation moyenne interne C :", round(mean(abs(cor(C)[lower.tri(cor(C))])), 2), "\n")
 cat("Corrélation ciblée B3 / C3     :", round(cor(df_toy$B3, df_toy$C3), 2), "\n")
 ```
@@ -308,11 +301,8 @@ cat("Corrélation ciblée B3 / C3     :", round(cor(df_toy$B3, df_toy$C3), 2), "
 :::
 
 
-:::
+### ACP classique
 
-## ACP classique sur les données globales
-
-::: {.columns}
 
 ::: {.column width= "65%"}
 
@@ -331,7 +321,7 @@ groupes_vars <- factor(c(rep("Groupe A", 5), rep("Groupe B", 3), rep("Groupe C",
 # 3. ACP classique globale (sans pondération par groupe)
 acp_globale <- PCA(df_toy, graph = FALSE)
 ```
-
+Graphique ACP Globale avec domination du Groupe A
 ```{r}
 #| echo: false
 #| fig-width: 6
@@ -340,22 +330,18 @@ acp_globale <- PCA(df_toy, graph = FALSE)
 library(factoextra)
 library(ggplot2)
 
-# 5. Graphique ACP Globale avec coloration par groupe
+
 fviz_pca_var(
   acp_globale, 
   repel = TRUE,
   col.var = groupes_vars,
-  palette = c("#e67e22", "#377EB8", "#000000"), # Rouge (A), Bleu (B), Vert (C)
+  palette = c("#e67e22", "#377EB8", "#000000"),
   legend.title = "Groupe",
-  title = "ACP Globale : Domination du Groupe A"
-) +
-  theme(
-    legend.position = c(0.98, 0.98),
-    legend.justification = c("right", "top")
-  ) + theme_afm
+  title = "ACP Globale : Domination du Groupe A",
+  labelsize = 7
+) + theme_metropolis
 
 ```
-
 
 
 :::
@@ -368,8 +354,7 @@ print_table(acp_globale$eig[1:3, 1:2])
 
 
 - Forte prépondérance de la première direction portée par le groupe A;
-- L’information des groupes B et C est
-diluée dans les autres directions.
+- L'information des groupes B et C est diluée dans les autres directions.
 
 :::
 
@@ -402,7 +387,9 @@ Comme pour l’ACP/ACM, il faut identifier la “bonne matrice” à décomposer
 ## Choix de la pondération
 
 - **Distance entre individus:** $i$ et $i'$ intègre la métrique de chaque groupe. Chaque variable $j$ du groupe $k$ est pondérée par l'inverse de la première valeur propre $\lambda_1^{(k)}$ issue de l'ACP individuelle de ce groupe :
-$$d^2(i, i') = \sum_{k=1}^{K} \textcolor{orange}{\frac{1}{\lambda_1^{(k)}}} \sum_{j=1}^{J_k} \left( x_{i, (k,j)} - x_{i', (k,j)} \right)^2$$
+$$
+d^2(i, i') = \sum_{k=1}^{K} {\color{orange} \frac{1}{\lambda_1^{(k)}}} \sum_{j=1}^{J_k} \left( x_{i, (k,j)} - x_{i', (k,j)} \right)^2
+$$
 
 **Remarque :** Les variables $x_{\cdot, (k,j)}$ sont supposées centrées et réduites.
 
@@ -504,7 +491,7 @@ print_table(eig_apres)
 
 :::{.fragment .fade-out fragment-index=1}
 
-### 1. ACP globale non pondérée (domination du Groupe A)
+- **ACP globale non pondérée (domination du Groupe A)**
 
 ::: {.columns}
 
@@ -523,12 +510,13 @@ fviz_pca_var(
   col.var = groupes_vars,
   palette = c("#e67e22", "#377EB8", "#000000"), # Rouge (A), Bleu (B), Vert (C)
   legend.title = "Groupe",
-  title = "ACP globale (sans pondération)"
-) +
+  title = "ACP globale (sans pondération)",
+  labelsize = 7
+) + theme_metropolis + 
   theme(
     legend.position = c(0.98, 0.98),
     legend.justification = c("right", "top")
-  ) + theme_afm
+  )
 
 ```
 
@@ -549,7 +537,7 @@ print_table(acp_globale$eig[1:5, 1:2])
 
 :::{.fragment .fade-in-then-out fragment-index=1}
 
-### 2. ACP globale pondérée de l'AFM (rééquilibrage des groupes)
+- **ACP globale pondérée de l'AFM (rééquilibrage des groupes)**
 
 ::: {.columns}
 
@@ -559,7 +547,6 @@ print_table(acp_globale$eig[1:5, 1:2])
 #| echo: false
 #| fig-height: 6
 #| fig-width: 6
-#| out-width: 100%
 
 
 # Cercle des corrélations de l'ACP pondérée globale dans l'AFM
@@ -569,12 +556,10 @@ fviz_mfa_var(
   choice = "quanti.var", # Affiche les corrélations des variables quantitatives
   palette = c("#e67e22", "#377EB8", "#000000"),
   legend.title = "Groupe",
-  title = "Cercle des corrélations de l'AFM"
-) +
-  theme(
-    legend.position = c(0.98, 0.98),
-    legend.justification = c("right", "top")
-  ) + theme_afm
+  title = "Cercle des corrélations de l'AFM",
+  labelsize = 7
+  
+) + theme_metropolis
 
 ```
 
@@ -709,12 +694,6 @@ vins <- read.table(file.path(script_dir, "data/AnaDo_JeuDonnees_VinsJury.csv"), 
 summary(vins, digits = 2)
 ```
 
-L'AFM avec groupe supplémentaire
-```{r}
-library(FactoMineR)
-vins.mfa <- MFA(vins, group=c(1,27,15,15,60), type=c("n",rep("s",4)), num.group.sup=c(1,5),
-           name.group=c("Cépage", "Expert", "Étudiant", "Consommateur", "Préférence"), ncp=9, graph=FALSE)
-```
 
 :::
 
@@ -723,17 +702,28 @@ vins.mfa <- MFA(vins, group=c(1,27,15,15,60), type=c("n",rep("s",4)), num.group.
 ## Exemple (jury de vins)
 
 
-Valeurs propres et inertie expliquée (ACP globale AFM)
+L'AFM avec groupe supplémentaire
 ```{r}
-#| echo: false
-#| out-width: 70%
-
-# Valeurs propres et inertie expliquée (ACP globale AFM)
-plot(vins.mfa $global.pca$eig[, 1])
+library(FactoMineR)
+vins.mfa <- MFA(vins, group=c(1,27,15,15,60), type=c("n",rep("s",4)), num.group.sup=c(1,5),
+           name.group=c("Cépage", "Expert", "Étudiant", "Consommateur", "Préférence"), ncp=9, graph=FALSE)
 ```
 
 
+Valeurs propres et inertie expliquée (ACP globale AFM)
+
 ::: {.columns}
+
+::: {.column }
+
+```{r}
+#| echo: false
+
+# Valeurs propres et inertie expliquée (ACP globale AFM)
+fviz_eig(vins.mfa$global.pca, addlabels = FALSE)
+```
+
+:::
 
 ::: {.column}
 
@@ -743,15 +733,12 @@ print_table(vins.mfa $global.pca$eig[, c(1,3)])
 
 :::
 
-::: {.column}
-
+:::
 - Règle du coude : on ne garderait que les 3 premières
 directions
 - On pourrait rajouter la 3ème (et 4ème) pour arriver à une
 inertie projetée $>70\%$ ($>80\%$) de l’inertie totale.
-:::
 
-:::
 ## Étude des individus
 
 ::: {.panel-tabset}
@@ -761,9 +748,8 @@ inertie projetée $>70\%$ ($>80\%$) de l’inertie totale.
 ```{r}
 #| echo: false
 #| label: plot-ind-cos2
-#| fig-width: 10
-#| fig-height: 10
-#| out-width: 70%
+#| fig-width: 12
+#| fig-height: 9
 
 library(factoextra)
 
@@ -773,13 +759,13 @@ fviz_mfa_ind(
   col.ind = "cos2",
   invisible= c('quali.sup', "quanti.sup"),
   gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-  repel = TRUE
+  repel = TRUE,
+  labelsize = 7
 ) +
   labs(
     title = "Plan factoriel (1-2) des individus",
     color = expression(cos^2)
-  ) +
-  theme_afm
+  ) + theme_metropolis
 ```
 
 
@@ -797,7 +783,7 @@ fviz_mfa_ind(
 # Qualité de représentation cumulée sur le plan 1-2
 fviz_cos2(vins.mfa, choice = "ind", axes = 1:2, top = 25) +
   labs(title = "cos² cumulé des individus (Axes 1 & 2)") +
-  theme_afm +
+  theme_metropolis +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 :::
@@ -808,6 +794,7 @@ fviz_cos2(vins.mfa, choice = "ind", axes = 1:2, top = 25) +
 ```{r}
 #| echo: false
 #| label: table-ind-cos2
+
 
 # Extraction et calcul du cos2 cumulé
 cos2_ind_plan <- rowSums(vins.mfa$ind$cos2[, 1:2])
@@ -838,7 +825,7 @@ print_table(df_ind_cos2[order(-df_ind_cos2$Plan_1_2), ])
 # Contributions des variables à l'Axe 1
 fviz_contrib(vins.mfa, choice = "ind", axes = 1, top = 25) +
   labs(title = "Contributions des individus à l'Axe 1 (%)") +
-  theme_afm +
+  theme_metropolis +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
@@ -849,7 +836,7 @@ fviz_contrib(vins.mfa, choice = "ind", axes = 1, top = 25) +
 # Contributions des variables à l'Axe 2
 fviz_contrib(vins.mfa, choice = "ind", axes = 2, top = 25) +
   labs(title = "Contributions des individus à l'Axe 2 (%)") +
-  theme_afm +
+  theme_metropolis +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 :::
@@ -884,15 +871,6 @@ print_table(df_ind_contrib[order(-df_ind_contrib$Total), ])
 
 ### Graphique (par groupe)
 
-```{r}
-#| echo: false
-#| fig-width: 10
-#| fig-height: 10
-#| out-width: 70%
-
-library(factoextra)
-```
-
 :::{.r-stack}
 
 :::{.fragment .fade-out fragment-index=1}
@@ -900,9 +878,8 @@ library(factoextra)
 ```{r}
 #| echo: false
 #| label: plot-var-groupes
-#| fig-width: 10
-#| fig-height: 10
-#| out-width: 70%
+#| fig-width: 12
+#| fig-height: 9
 
 plot.MFA(
   vins.mfa,
@@ -910,9 +887,11 @@ plot.MFA(
   invisible = c("quanti.sup", "quali.sup"),
   palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
   graph.type = "ggplot",
-  legend.title = "Groupe"
+  legend.title = "Groupe",
+  cex = 1.5
 ) +
-  theme_afm
+  labs(title = "Cercle des corrélations des variables") +
+  theme_metropolis
 ```
 
 :::
@@ -922,9 +901,8 @@ plot.MFA(
 ```{r}
 #| echo: false
 #| label: plot-var-groupes-filtered
-#| fig-width: 10
-#| fig-height: 10
-#| out-width: 70%
+#| fig-width: 12
+#| fig-height: 9
 
 # Cercle des corrélations après filtrage des variables mal représentées
 plot.MFA(
@@ -935,9 +913,11 @@ plot.MFA(
   select="cos2 20",
   unselect=.8,
   graph.type = "ggplot",
-  legend.title = "Groupe"
+  legend.title = "Groupe",
+  cex = 1.5
 ) +
-  theme_afm
+  labs(title = "Cercle des corrélations des variables (cos2 top 20)") +
+  theme_metropolis
 ```
 
 :::
@@ -947,9 +927,8 @@ plot.MFA(
 ```{r}
 #| echo: false
 #| label: plot-var-groupes-sucre-acide
-#| fig-width: 10
-#| fig-height: 10
-#| out-width: 70%
+#| fig-width: 12
+#| fig-height: 9
 
 plot.MFA(
   vins.mfa,
@@ -959,9 +938,11 @@ plot.MFA(
   select=grep("sucre|acide", rownames(vins.mfa$quanti.var$coord), ignore.case = TRUE, value = FALSE),
   unselect=.9,
   graph.type = "ggplot",
-  legend.title = "Groupe"
+  legend.title = "Groupe",
+  cex = 1.5
 ) +
-  theme_afm
+  labs(title = "Cercle des corrélations des variables (acide/sucré)") +
+  theme_metropolis
 ```
 
 :::
@@ -982,7 +963,7 @@ plot.MFA(
 # Qualité de représentation cumulée sur le plan 1-2
 fviz_cos2(vins.mfa, choice = "quanti.var", axes = 1:2, top = 25) +
   labs(title = "cos² cumulé des variables (Axes 1 & 2)") +
-  theme_afm +
+  theme_metropolis +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 :::
@@ -1023,7 +1004,7 @@ print_table(df_var_cos2[order(-df_var_cos2$Plan_1_2), ], scroll = 18)
 # Contributions des variables à l'Axe 1
 fviz_contrib(vins.mfa, choice = "quanti.var", axes = 1, top = 25) +
   labs(title = "Contributions des variables à l'Axe 1 (%)") +
-  theme_afm +
+  theme_metropolis +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
@@ -1034,7 +1015,7 @@ fviz_contrib(vins.mfa, choice = "quanti.var", axes = 1, top = 25) +
 # Contributions des variables à l'Axe 2
 fviz_contrib(vins.mfa, choice = "quanti.var", axes = 2, top = 25) +
   labs(title = "Contributions des variables à l'Axe 2 (%)") +
-  theme_afm +
+  theme_metropolis +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
@@ -1112,8 +1093,8 @@ $$0 \le \mathcal{L}_g(k,v_1) =  \frac{I_k(v)}{\lambda_1^{(k)}} \le 1$$
 
 ```{r}
 #| echo: false
-#| fig-width: 8
-#| fig-height: 8
+#| fig-width: 6
+#| fig-height: 6
 
 plot.MFA(
   vins.mfa,
@@ -1122,9 +1103,10 @@ plot.MFA(
   select=rownames(vins.mfa$group$coord),
   unselect=0.0,
   graph.type = "ggplot",
-  legend.title = "Groupe"
+  legend.title = "Groupe",
+  cex = 1.8
 ) +
-  theme_afm
+  theme_metropolis
 
 ```
 
@@ -1284,3 +1266,493 @@ print_table(df_lg)
 ```
 
 :::
+
+
+# Individus partiels, ACPs séparées
+**Questions d’intérêt**
+
+- Les profils d’individus sont-ils similaires entre les différents groupes ?
+- Y a-t-il des individus remarquables pour certains groupes de variables ?
+
+Pour que ce soit pertinent, on doit comparer les profils d’individus des groupes dans un **espace commun**. On va les comparer dans l’espace obtenu par l’AFM.
+
+
+::: {.callout-note}
+
+### Définition
+
+Pour chaque groupe $\kappa$ de variables, on note $X^{(\kappa)}$ la matrice des individus partiels, construite à partir de $X$ comme suit :
+
+$$
+X_{i,(k,j)}^{(\kappa)} = \begin{cases} 
+x_{i,(k,j)} & \text{si } k = \kappa, \\
+0 & \text{sinon.}
+\end{cases}
+$$
+:::
+
+::: {.data-table}
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="3">Groupe A</th>
+      <th colspan="2">Groupe B</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>var 1</th>
+      <th>var 2</th>
+      <th>var 3</th>
+      <th>var 1</th>
+      <th>var 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Individu 1</strong></td>
+      <td>$x_{1,(A,1)}$</td>
+      <td>$x_{1,(A,2)}$</td>
+      <td>$x_{1,(A,3)}$</td>
+      <td>$x_{1,(B,1)}$</td>
+      <td>$x_{1,(B,2)}$</td>
+    </tr>
+    <tr style="height: 1.2em;">
+      <td colspan="6"></td>
+    </tr>
+    <tr>
+      <td><strong>Individu partiel A</strong></td>
+      <td>$x_{1,(A,1)}$</td>
+      <td>$x_{1,(A,2)}$</td>
+      <td>$x_{1,(A,3)}$</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr style="height: 1.2em;">
+      <td colspan="6"></td>
+    </tr>
+    <tr>
+      <td><strong>Individu partiel B</strong></td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>$x_{1,(B,1)}$</td>
+      <td>$x_{1,(B,2)}$</td>
+    </tr>
+  </tbody>
+</table>
+:::
+
+
+
+## Projection des points partiels
+
+
+::: {.columns}
+
+::: {.column width="75%"}
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+
+library(factoextra)
+# 1. Générer le graphique dans un objet
+p <- fviz_mfa_ind(
+  vins.mfa,
+  partial = "all",
+  palette = c(
+    "Expert" = "#e67e22",
+    "Étudiant" = "#377EB8",
+    "Consommateur" = "#000000"
+  ),
+  repel = TRUE,
+  labelsize = 5
+) + theme_metropolis
+
+# 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
+for (i in seq_along(p$layers)) {
+  if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
+    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
+  }
+}
+
+# 3. Afficher le résultat
+p
+```
+
+:::
+
+::: {.column width="25%"}
+
+On projette les individus partiels
+dans le plan principal, et on
+observe leur position par rapport
+aux individus associés :
+
+- `V Aub Silex` a été jugé bien plus extrêmes par `Conso` que par `Expert`, relativement à la première direction ;
+
+- `S Michaud` a été jugé plus extrêmes par `Expert` que par `Conso`, relativement à la deuxième direction
+
+Il y a peu d’écart pour les points partiels de `Etudiant`.
+:::
+
+:::
+
+## Étude des inerties
+
+Décomposition
+
+$$
+\begin{aligned}\text{Inertie}_{\text{tot}, r} & = \text{Inertie}_{\text{inter}, r} + \text{Inertie}_{\text{intra}, r} \\
+\sum_{i=1}^n \sum_{k=1}^K \left( C_r^{(\text{ind}, k)}(i) \right)^2 & = K \sum_{i=1}^n \left( C_r^{(\text{ind})}(i) \right)^2 + \sum_{i=1}^n \sum_{k=1}^K \left( C_r^{(\text{ind}, k)}(i) - C_r^{(\text{ind})}(i) \right)^2\end{aligned}
+$$
+
+avec :
+
+- $C_r^{(\text{ind}, k)}(i)$ : coordonnée sur l’axe $r$ de l’individu partiel $i$ selon le groupe $k$.
+- $C_r^{(\text{ind})}(i)$ : coordonnée sur l’axe $r$ de l’individu moyen (consensus) $i$, telle que $C_r^{(\text{ind})}(i) = \frac{1}{K} \sum_{k=1}^K C_r^{(\text{ind}, k)}(i)$.
+
+À partir de ces inerties, on peut étudier les écarts entre les points partiels et les points moyens associés.
+
+
+
+## Étude des inerties
+
+
+::: {.columns}
+
+::: {.column width="65%"}
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+
+library(factoextra)
+# 1. Générer le graphique dans un objet
+p <- fviz_mfa_ind(
+  vins.mfa,
+  partial = "all",
+  palette = c(
+    "Expert" = "#e67e22",
+    "Étudiant" = "#377EB8",
+    "Consommateur" = "#000000"
+  ),
+  repel = TRUE,
+  labelsize = 6
+)+ coord_cartesian(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5)) + theme_metropolis
+
+# 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
+for (i in seq_along(p$layers)) {
+  if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
+    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
+    p$layers[[i]]$aes_params$linewidth <- 1
+  }
+}
+
+# 3. Afficher le résultat
+p
+```
+
+:::
+::: {.column width="35%"}
+
+$$\frac{\text{Inertie}_{\text{inter}, 1}}{\text{Inertie}_{\text{tot}, 1}}$$
+
+```{r}
+#| echo: false
+#| message: false
+
+# Nombre de groupes d'individus/variables actives
+K <- length(rownames(vins.mfa$group$coord))
+
+# Inertie inter pour l'axe 1 (K * somme des carrés des coords consensus)
+inertie_inter <- K * colSums(vins.mfa$ind$coord[,1:3]^2)
+
+# Inertie totale des points partiels pour l'axe 1
+inertie_tot <- colSums(vins.mfa$ind$coord.partiel[,1:3]^2)
+# Ratio d'inertie inter / totale
+print_table(inertie_inter / inertie_tot)
+```
+
+- Les coordonnées des points partiels selon la 1ère direction sont globalement proches de celles de leur point moyen.
+
+- On peut s’intéresser aux individus avec de grandes inerties intra pour avoir des informations plus précises sur les différences entre les groupes.
+:::
+
+:::
+
+
+
+## Inertie intra individus
+
+::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index=1}
+
+::: {.columns}
+
+::: {.column width="65%"}
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+
+library(factoextra)
+# 1. Générer le graphique dans un objet
+p <- fviz_mfa_ind(
+  vins.mfa,
+  partial = c("V Aub Silex  "),
+  palette = c(
+    "Expert" = "#e67e22",
+    "Étudiant" = "#377EB8",
+    "Consommateur" = "#000000"
+  ),
+  repel = TRUE,
+  labelsize = 6
+) + coord_cartesian(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5))+ theme_metropolis
+
+# 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
+for (i in seq_along(p$layers)) {
+  if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
+    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
+    p$layers[[i]]$aes_params$linewidth <- 1.2
+  }
+}
+
+# 3. Afficher le résultat
+p
+```
+:::
+
+::: {.column width="35%"}
+
+```{r}
+id <- grep("V Aub Silex", rownames(vins.mfa$ind$coord))
+print_table(vins.mfa$ind$within.inertia[id, 1:2, drop = FALSE])
+```
+
+- L'inertie intra de `V Aub Silex` pour la 1ère direction est très élevée: plus fortes différences entre les groupes selon cette direction.
+
+```{r}
+ids <- grep("V Aub Silex", rownames(vins.mfa$ind$coord.partiel))
+print_table(vins.mfa$ind$within.partial.inertia[ids, 1:2])
+```
+- Cette inertie intra selon la 1ère direction vient surtout des groupes `Expert` et `Conso`.
+:::
+
+:::
+
+:::
+
+
+
+::: {.fragment .fade-in fragment-index=1}
+
+::: {.columns}
+
+::: {.column width="65%"}
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+
+library(factoextra)
+# 1. Générer le graphique dans un objet
+p <- fviz_mfa_ind(
+  vins.mfa,
+  partial = c("S Michaud  "),
+  palette = c(
+    "Expert" = "#e67e22",
+    "Étudiant" = "#377EB8",
+    "Consommateur" = "#000000"
+  ),
+  repel = TRUE,
+  labelsize = 6
+) + coord_cartesian(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5))+ theme_metropolis
+
+# 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
+for (i in seq_along(p$layers)) {
+  if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
+    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
+    p$layers[[i]]$aes_params$linewidth <- 1.2
+  }
+}
+
+# 3. Afficher le résultat
+p
+```
+:::
+
+::: {.column width="35%"}
+
+```{r}
+id <- grep("S Michaud", rownames(vins.mfa$ind$coord))
+print_table(vins.mfa$ind$within.inertia[id, 1:2, drop = FALSE])
+```
+
+- L'inertie intra de `S Michaud` pour la 2ème direction est très élevée: plus fortes différences entre les groupes selon cette direction.
+
+```{r}
+ids <- grep("S Michaud", rownames(vins.mfa$ind$coord.partiel))
+print_table(vins.mfa$ind$within.partial.inertia[ids, 1:2])
+```
+- Cette inertie intra selon la 1ère direction vient surtout des groupes `Expert` et `Conso`.
+:::
+
+:::
+
+:::
+
+
+:::
+
+# Aide à l’interprétation
+
+## Interprétation des axes
+
+- **Variables actives :** L'interprétation des axes s'appuie, comme en ACP/ACM, sur :
+  - La **contribution** ($\text{CTR}$) des variables aux axes.
+  - La **qualité de représentation** ($\cos^2$).
+
+- **Variables supplémentaires :** Elles sont projetées dans les plans principaux de l'AFM sans participer à la construction des axes :
+
+  - *Groupes supplémentaires :* caractérisés par le coefficient $L_g$.
+  - *Variables quantitatives :* mesurées par leur corrélation avec les directions principales.
+  - *Variables qualitatives :* projection des modalités au barycentre des individus qui les possèdent (comme en ACM).
+
+## Exemple: Notes de 60 consommateurs
+
+Variables quantitatives: note  pour chaque vin 
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+p <- fviz_mfa_var(
+  vins.mfa,
+  choice = "quanti.var",
+  select.var = list(name =rownames(vins.mfa$quanti.var.sup$coord)),
+  geom = "arrow", 
+  col.var.sup = "#4DAF4A",
+  repel = TRUE,
+) +
+  labs(title = "Variables quantitatives supplémentaires") + theme_metropolis
+
+for (i in seq_along(p$layers)) {
+  if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
+    p$layers[[i]]$aes_params$linetype <- "solid"
+  }
+}
+
+p
+```  
+
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+plot.MFA(
+  vins.mfa,
+  choix = "group",
+  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  graph.type = "ggplot",
+  legend.title = "Groupe",
+  cex = 1.8
+) +
+  theme_metropolis
+
+```
+
+:::
+
+:::
+
+
+
+
+## Exemple: Cépage de chacun des vins 
+
+Variable qualitative: *Sauvignon* ou *Vouvray*
+
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+# Projection des individus colorés par cépage (avec barycentres)
+fviz_mfa_ind(
+  vins.mfa,
+  habillage = "cepage", 
+  palette = c("#df1cd5", "#581344"),
+  repel = TRUE,
+  labelsize=7
+) +
+  theme_metropolis
+```
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+library(factoextra)
+plot.MFA(
+  vins.mfa,
+  choix = "ind",
+  partial = c("Sauvignon", "Vouvray"), # Noms exacts des modalités
+  invisible = "ind",                   # Masque les individus réels (vins)
+  palette = c("#c2489d","#e67e22", "#377EB8", "#000000"),
+  graph.type = "ggplot",
+  cex = 1.8,
+  repel=TRUE
+) +
+  labs(title = "Profils partiels des cépages") +
+  theme_metropolis
+```
+
+
+:::
+
+:::
+
+
+## Données qualitatives et mixtes
+
+**Données qualitatives :** L'AFM s'étend naturellement aux tableaux composés de variables qualitatives :
+- L'**ACM** (Analyse Factorielle des Correspondances Multiples) remplace l'ACP dans l'étape préalable d'analyse groupe par groupe.
+- La pondération du groupe $j$ reste définie par $w_j = \frac{1}{\lambda_1^{(j)}}$, où $\lambda_1^{(j)}$ est la *première valeur propre de l'ACM* de ce groupe.
+
+**Données mixtes :** L'AFM permet de traiter simultanément des groupes d'actives *quantitatives et qualitatives* :
+
+- **Pondération unifiée $w_j = \frac{1}{\lambda_1^{(j)}}$** :
+  - Groupe *quantitatif* $\rightarrow$ $\lambda_1^{(j)}$ issu d'une *ACP* (centrée-réduite ou non).
+  - Groupe *qualitatif* $\rightarrow$ $\lambda_1^{(j)}$ issu d'une *ACM*.
+- *Analyse globale* : ACP pondérée appliquée au tableau juxtaposé, où les variables qualitatives sont codées sous forme de *tableau disjonctif complet* (TDC).

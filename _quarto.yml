@@ -109,12 +109,10 @@ format:
       source: false
     code-overflow: wrap
     highlight-style: github
-    fig-responsive: true
-    fig.align: center
+    fig-align: center
     reference-location: margin
     citation-location: margin
     from: markdown+emoji
-
     #toc-location: right
     #toc: true
 
@@ -132,6 +130,7 @@ format:
     code-line-numbers: false
     eval: true
     echo: true
+    fig-align: center
 
 execute:
   freeze: auto
@@ -142,3 +141,4 @@ knitr:
     prompt: true
     message: false
     warning: false
+    dev: svglite

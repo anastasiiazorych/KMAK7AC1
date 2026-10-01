@@ -83,3 +83,17 @@ get_script_dir <- function() {
   warning("Impossible de détecter le dossier du script, retour au working directory.")
   getwd()
 }
+
+library(ggplot2)
+
+theme_metropolis <- theme_minimal(base_size = 18) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 16),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15),
+    legend.position = "inside",
+    legend.position.inside = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  ) 
