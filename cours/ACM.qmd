@@ -457,7 +457,7 @@ data(hobbies)
 ```{r}
 #| echo: false
 
-print_table(head(hobbies))
+print_table(head(hobbies), max.col.width="4em")
 ```
 
 
@@ -560,8 +560,6 @@ Représentation du nuage des individus sur le 1er plan principal
 
 ```{r}
 #| echo: false
-#| fig-height: 8
-#| fig-width: 8
 #| out-width: "100%"
 
 library(plotly)
@@ -626,7 +624,9 @@ plot_activites <- plotly_build(plot_ly())
 plot_activites$x$data <- traces
 plot_activites %>%
   layout(
-    title = list(text = paste("Nuage des individus -", activites[1]), x = 0.5),
+      width = 600,
+      height = 450,
+      title = list(text = paste("Nuage des individus -", activites[1]), x = 0.5),
     xaxis = list(title = "Dim 1", automargin = TRUE),
     yaxis = list(title = "Dim 2", automargin = TRUE),
     #margin = list(l = 75, r = 30, t = 70, b = 130),
@@ -669,9 +669,10 @@ plot_activites %>%
 ```{r}
 #| echo: false
 #| fig-width: 12
-#| fig-height: 12
+#| fig-height: 9
 
 library(ggplot2)
+library(factoextra)
 
 # 1. Extraction des noms de toutes les modalités actives
 
@@ -684,28 +685,38 @@ bary <- sweep(
 )
 
 nom_modalites <- rownames(bary)
+bary <- as.data.frame(bary)
+bary$modalite <- nom_modalites
 
 # 2. Attribution des couleurs et des formes aux modalités
 couleurs_var <- ifelse(grepl("(_1|_y)$", nom_modalites), "#2e74b5", "#e67e22")
 formes_var <- ifelse(grepl("(_1|_y)$", nom_modalites), 17, 18)
 
 # 3. Génération du graphique
-plot(hobbies.mca,
-     choix = "ind",
-     invisible = c("var", "quanti.sup", "quali.sup"),
-     col.ind = "lightgrey",   # Individus en gris clair
-     label = "none",
-      title = "ACM : Barycentres de toutes les modalités") +
-    geom_point(data = bary, aes(x = `Dim 1`, y = `Dim 2`), color = couleurs_var, shape = formes_var, size = 4) +
-  geom_text(data = bary, aes(x = `Dim 1`, y = `Dim 2`, label = rownames(bary)), vjust = -1, fontface = "bold", color = couleurs_var, size = 4)  + 
-  theme(
-    axis.title = element_text(size = 16),
-    axis.text = element_text(size = 14),
-    legend.text = element_text(size = 14),
-    legend.title = element_blank(),
-    legend.position = c(0.85, 0.85), # x=85%, y=85% du graphique
-    legend.background = element_rect(fill = alpha("white", 0.6), color = "gray80")
-  )
+fviz_mca_ind(
+  hobbies.mca,
+  axes = c(1, 2),
+  geom = "point",
+  col.ind = "lightgrey",
+  title = "ACM : Barycentres de toutes les modalités"
+) +
+  geom_point(
+    data = bary,
+    aes(x = `Dim 1`, y = `Dim 2`),
+    color = couleurs_var,
+    shape = formes_var,
+    size = 4,
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = bary,
+    aes(x = `Dim 1`, y = `Dim 2`, label = modalite),
+    vjust = -1,
+    color = couleurs_var,
+    size = 8,
+    inherit.aes = FALSE
+  ) +
+  theme_metropolis
 
 ```
 
@@ -718,51 +729,43 @@ plot(hobbies.mca,
 ```{r}
 #| echo: false
 #| fig-width: 12
-#| fig-height: 12
-library(ggplot2)
-
-# 1. Extraction des noms de toutes les modalités actives
-
-bary <- hobbies.mca$var$coord[, c("Dim 1", "Dim 2")]
-bary <- sweep(
-  bary,
-  MARGIN = 2,
-  STATS = sqrt(hobbies.mca$eig[1:2, "eigenvalue"]),
-  FUN = "*"
-)
-
-nom_modalites <- rownames(bary)
-
-# 2. Attribution des couleurs et des formes aux modalités
-couleurs_var <- ifelse(grepl("(_1|_y)$", nom_modalites), "#2e74b5", "#e67e22")
-formes_var <- ifelse(grepl("(_1|_y)$", nom_modalites), 17, 18)
+#| fig-height: 9
 
 x_lim <- range(bary[, "Dim 1"])
 x_lim <- x_lim + diff(x_lim) * c(-0.1, 0.1)
 y_lim <- range(bary[, "Dim 2"])
 y_lim <- y_lim + diff(y_lim) * c(-0.1, 0.1)
 
-# 3. Génération du graphique
-plot(hobbies.mca,
-    choix = "ind",
-    invisible = c("var", "quanti.sup", "quali.sup"),
-    col.ind = NA,
-    label = "none",
-    title = "ACM : Barycentres de toutes les modalités (Zoom)") +
-    geom_point(data = bary, aes(x = `Dim 1`, y = `Dim 2`), color = couleurs_var, shape = formes_var, size = 4) +
-  geom_text(data = bary, aes(x = `Dim 1`, y = `Dim 2`, label = rownames(bary)), vjust = -1, fontface = "bold", color = couleurs_var, size = 4)  + 
+# 3. Génération du graphique avec le même style fviz que ci-dessus
+fviz_mca_ind(
+  hobbies.mca,
+  axes = c(1, 2),
+  geom = "point",
+  col.ind = "lightgrey",
+  alpha.ind = 0,
+  title = "ACM : Barycentres de toutes les modalités (Zoom)"
+) +
+  geom_point(
+    data = bary,
+    aes(x = `Dim 1`, y = `Dim 2`),
+    color = couleurs_var,
+    shape = formes_var,
+    size = 4,
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = bary,
+    aes(x = `Dim 1`, y = `Dim 2`, label = modalite),
+    vjust = -1,
+    color = couleurs_var,
+    size = 8,
+    inherit.aes = FALSE
+  ) +
   coord_cartesian(
     xlim = x_lim,
     ylim = y_lim
   ) +
-  theme(
-    axis.title = element_text(size = 16),
-    axis.text = element_text(size = 14),
-    legend.text = element_text(size = 14),
-    legend.title = element_blank(),
-    legend.position = c(0.85, 0.85), # x=85%, y=85% du graphique
-    legend.background = element_rect(fill = alpha("white", 0.6), color = "gray80")
-  )
+  theme_metropolis
 
 ```
 
@@ -1160,7 +1163,7 @@ On retrouve [l'inertie des profils lignes $I(L)$](#sec-inertie_ligne).
 ```{r}
 #| echo: false
 #| fig-width: 12
-#| fig-height: 12
+#| fig-height: 9
 
 
 library(ggplot2)
@@ -1199,11 +1202,7 @@ plot(hobbies.mca,
   ) +
   theme(
     axis.title = element_text(size = 16),
-    axis.text = element_text(size = 14),
-    legend.text = element_text(size = 14),
-    legend.title = element_blank(),
-    legend.position = c(0.85, 0.85), # x=85%, y=85% du graphique
-    legend.background = element_rect(fill = alpha("white", 0.6), color = "gray80")
+    axis.text = element_text(size = 14)
   )
 
 ```
@@ -1460,8 +1459,7 @@ On calcule la position d'une modalité comme le centre de gravité des individus
 
 ::: {.columns}
 ::: {.column width="50%"}
-#### Approche 1 : Propriété de transition
-Utilisation des coordonnées de l'ACM (`FactoMineR`)
+ **Approche 1 : Propriété de transition.** Utilisation des coordonnées de l'ACM (`FactoMineR`)
 
 ```{r}
 # Coordonnées des modalités (normalisées)
@@ -1482,8 +1480,7 @@ print_table(bary1_mod, scroll = 5)
 :::
 
 ::: {.column width="50%"}
-#### Approche 2 : Moyenne empirique directe
-Calcul explicite sur les individus du tableau nettoyé
+**Approche 2 : Moyenne empirique directe.** Calcul explicite sur les individus du tableau nettoyé
 
 ```{r}
 # Coordonnées des individus sur les axes 1 et 2
@@ -1513,8 +1510,7 @@ Réciproquement, la coordonnée d'un individu $i$ est le centre de gravité des 
 
 ::: {.columns}
 ::: {.column width="50%"}
-#### Approche 1 : Propriété de transition
-Utilisation des coordonnées des individus (`FactoMineR`)
+**Approche 1 : Propriété de transition.** Utilisation des coordonnées des individus (`FactoMineR`)
 
 ```{r}
 # Coordonnées des individus (normalisées)
@@ -1535,8 +1531,7 @@ print_table(bary1_ind, scroll = 5)
 :::
 
 ::: {.column width="50%"}
-#### Approche 2 : Moyenne empirique directe
-Calcul explicite sur les modalités actives de chaque individu
+**Approche 2 : Moyenne empirique directe.** Calcul explicite sur les modalités actives de chaque individu
 
 ```{r}
 # 1. Coordonnées des modalités sur les axes 1 et 2
@@ -1587,12 +1582,9 @@ $\Rightarrow$ On interprétera en priorité les directions associées à une ine
 ::: {.panel-tabset}
 
 ### Définition
-- **Contribution de l'individu $i$ à l'axe de rang $r$ :**
-
+- **Contribution de l'individu $i$ à l'axe de rang $r$ :** 
 $$\operatorname{CTR}_r^{(\text{ind})}(i) = \frac{\left(C_r^{(\text{ind})}(i)\right)^2}{n \, \lambda_r}$$
-
 où $C_r^{(\text{ind})}(i)$ est la coordonnée de l'individu $i$ sur l'axe $r$, $n$ le nombre total d'individus et $\lambda_r$ la valeur propre de l'axe $r$.
-
 
 ::: {.columns}
 
@@ -1617,9 +1609,9 @@ fviz_mca_ind(
   pointsize = 1.5,                # Taille réduite pour clarifier la lecture
   alpha.ind = 0.6,                # Transparence pour gérer les superpositions
   repel = TRUE,
-  title = "ACM - Nuage des individus (colorés par contribution)"
-) +
-  theme_minimal()
+  title = "ACM - Nuage des individus (colorés par contribution)",
+  labelsize = 7
+) + theme_metropolis
 ```
 
 :::
@@ -1657,10 +1649,8 @@ head(round(contrib_ind[, 1:3], 2), 10)
 ## Définition
 
 
-- **Contribution de la modalité $j$ à l'axe de rang $r$ :**
-
+- **Contribution de la modalité $j$ à l'axe de rang $r$ :** 
 $$\operatorname{CTR}_r^{(\text{mod})}(j) = \frac{f_j \left(C_r^{(\text{mod})}(j)\right)^2}{p \, \lambda_r}$$
-
 où $f_j = \frac{n_j}{n}$ est la fréquence relative de la modalité $j$, $C_r^{(\text{mod})}(j)$ sa coordonnée sur l'axe $r$ et $p$ le nombre de variables actives.
 
 
@@ -1686,9 +1676,9 @@ fviz_mca_var(
   invisible= 'quali.sup',
   gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), # Gradient : Bleu (Faible) -> Rouge (Fort)
   repel = TRUE,                   # Éviter le chevauchement du texte
-  title = "ACM - Carte des modalités (colorées par contribution)"
-) +
-  theme_minimal()
+  title = "ACM - Carte des modalités (colorées par contribution)",
+  labelsize = 7
+) + theme_metropolis
 ```
 
 :::
@@ -1698,13 +1688,9 @@ fviz_mca_var(
 
 **Attention :** Comme en AFC, la position sur le graphe seul ne suffit pas pour interpréter le rôle d'une modalité. Les modalités les plus excentrées ne sont pas nécessairement celles qui contribuent le plus, car leur contribution dépend aussi de leur fréquence $f_j$.
 
-
 :::
 
 :::
-
-
-
 
 
 ## En R
@@ -1757,9 +1743,7 @@ print_table(as.data.frame(hobbies.mca$call$marge.col), scroll=20)
 ### Définition
 
 - **Contribution de la variable $k$ à l'axe de rang $r$ :**
-
 $$\operatorname{CTR}_r^{(\text{var})}(k) = \sum_{j \in J_k} \operatorname{CTR}_r^{(\text{mod})}(j) = \frac{\eta^2(k, F_r)}{p \, \lambda_r}$$
-
 où $J_k$ désigne l'ensemble des modalités de la variable $k$, et $\eta^2(k, F_r)$ est le rapport de corrélation entre la variable qualitative $k$ et la composante factorielle $F_r$.
 
 ::: {.columns}
@@ -1786,9 +1770,9 @@ fviz_mca_var(
   col.quali.sup = "#000000",
   col.quanti.sup = "#00AFBB",
   repel = TRUE,
-  title = "ACM - Carré des liaisons (rapports de corrélation eta²)"
-) +
-  theme_minimal()
+  title = "ACM - Carré des liaisons (rapports de corrélation eta²)",
+ labelsize = 7
+) + theme_metropolis
 ```
 :::
 ::: {.column width="30%"}
@@ -1800,8 +1784,6 @@ fviz_mca_var(
 :::
 
 ### En R
-
-
 
 :::
 
@@ -1852,8 +1834,8 @@ Comme pour l’AFC : on se sert des relations de transitions pour calculer les c
 
 ```{r}
 #| echo: false
-#| fig-width: 8
-#| fig-height: 6
+#| fig-width: 12
+#| fig-height: 9
 #| out-width: 60%
  
 library(RColorBrewer)
@@ -1878,9 +1860,9 @@ fviz_mca_var(
   col.var = "lightgrey",
   col.quali.sup = col.quali.sup,
   repel = TRUE,
-  title = "ACM - Modalités supplémentaires colorées par variable"
-) +
-  theme_minimal()
+  title = "ACM - Modalités supplémentaires colorées par variable",
+   labelsize = 7
+) + theme_metropolis
 
 ```
 
