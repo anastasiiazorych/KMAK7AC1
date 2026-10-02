@@ -118,7 +118,7 @@ print_table(ocde.mfa$quanti.var$cos2[,1:2])
 #| echo: false
 #| fig-width: 12
 #| fig-height: 9
-#| out-width: "50%"
+#| out-width: "75%"
 
 
 library(factoextra)
@@ -147,7 +147,7 @@ theme(
 #| echo: false
 #| fig-width: 12
 #| fig-height: 9
-#| out-width: "50%"
+#| out-width: "75%"
 
 
 # Cercle des corrélations de l'ACP pondérée globale dans l'AFM

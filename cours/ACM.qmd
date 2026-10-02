@@ -1837,7 +1837,12 @@ On peut filtrer les modalités correctement représentées et qui contribuent fo
 #| fig-heigth: 6
 
 
-plot.MCA(hobbies.mca, cex=.7, selectMod = "cos2 10", select = "contrib 10", invisible = "ind")
+plot.MCA(hobbies.mca,
+  cex=.7,
+  selectMod = "cos2 10",
+  select = "contrib 10",
+  invisible = "ind",
+  graph.type = "ggplot")
 ```
 :::
 

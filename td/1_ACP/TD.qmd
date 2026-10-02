@@ -118,7 +118,13 @@ cidre.acp$eig |>
 
 ```{r}
 #| echo: false
-plot(cidre.acp$eig[,1])
+
+library(factoextra)
+
+fviz_eig(cidre.acp,
+         geom= "bar",
+         labelsize = 6,
+         addlabels = FALSE) + theme_metropolis
 ```
 
 
@@ -161,11 +167,14 @@ ainsi que les deux représentations graphiques suivantes.
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_var(
   cidre.acp,
-  choix = "var",
   axes = c(1, 2),
-)
+  col.var = "#d95f02",
+  repel = TRUE,
+  title = "Cercle des corrélations - dimensions 1-2"
+) +
+  theme_metropolis
 ```
 
 ### Dim 2-3
@@ -173,11 +182,14 @@ plot(
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_var(
   cidre.acp,
-  choix = "var",
   axes = c(2, 3),
-)
+  col.var = "#d95f02",
+  repel = TRUE,
+  title = "Cercle des corrélations - dimensions 2-3"
+) +
+  theme_metropolis
 ```
 
 ### Interactif 3D
@@ -343,11 +355,15 @@ ainsi que les représentations graphiques suivantes.
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_ind(
   cidre.acp,
-  choix = "ind",
   axes = c(1, 2),
-)
+  geom = c("point", "text"),
+  col.ind = "#2e74b5",
+  repel = TRUE,
+  title = "Individus - dimensions 1-2"
+) +
+  theme_metropolis
 ```
 
 ### Dim 2-3
@@ -355,11 +371,15 @@ plot(
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_ind(
   cidre.acp,
-  choix = "ind",
   axes = c(2, 3),
-)
+  geom = c("point", "text"),
+  col.ind = "#2e74b5",
+  repel = TRUE,
+  title = "Individus - dimensions 2-3"
+) +
+  theme_metropolis
 ```
 
 ### Interactif 3D
@@ -477,7 +497,7 @@ print_table(decastar, max.col.width = "3.5em")
 envie de conserver ?
 
 ```{r}
-deca.acp = PCA(decastar[, 1:11], quanti.sup= 11 )
+deca.acp = PCA(decastar[, 1:11], quanti.sup= 11, graph = FALSE )
 ```
 
 :::{.panel-tabset}
@@ -496,14 +516,32 @@ print_table(deca.acp$eig)
 
 ```{r}
 #| echo: false
-plot(deca.acp$eig[,1])
+fviz_eig(
+  deca.acp,
+  choice = "eigenvalue",
+  geom = "line",
+  linecolor = "#2e74b5",
+  main = "Valeurs propres"
+) +
+  theme_metropolis
 ```
 
 ### Inertie cumulée
 
 ```{r}
 #| echo: false
-plot(deca.acp$eig[,3])
+ggplot2::ggplot(
+  data.frame(
+    Dimension = seq_len(nrow(deca.acp$eig)),
+    Inertie_cumulee = deca.acp$eig[, 3]
+  ),
+  ggplot2::aes(x = Dimension, y = Inertie_cumulee, group = 1)
+) +
+  ggplot2::geom_line(color = "#2e74b5") +
+  ggplot2::geom_point(color = "#2e74b5") +
+  ggplot2::scale_x_continuous(breaks = seq_len(nrow(deca.acp$eig))) +
+  ggplot2::labs(x = "Dimension", y = "Inertie cumulée (%)") +
+  theme_metropolis
 ```
 
 
@@ -547,12 +585,17 @@ deca.acp$ind$cos2[, 1:4] |>
 #| out-width: "100%"
 
 
-plot(
+fviz_pca_ind(
   deca.acp,
-  choix = "ind",
   axes = c(1, 2),
+  geom = c("point", "text"),
   invisible = "quanti.sup",
-)
+  col.ind = "#2e74b5",
+  repel = TRUE,
+  labelsize = 6,
+  title = "Individus - dimensions 1-2"
+) +
+  theme_metropolis
 ```
 
 
@@ -562,33 +605,19 @@ plot(
 #| echo: false
 #| out-width: "100%"
 
-ind_dim12 <- data.frame(
-  Dim.1 = deca.acp$ind$coord[, 1],
-  Dim.2 = deca.acp$ind$coord[, 2],
-  nom = rownames(deca.acp$ind$coord),
-  cos2 = rowSums(deca.acp$ind$cos2[, 1:2])
-)
-
-ggplot2::ggplot(ind_dim12, ggplot2::aes(Dim.1, Dim.2, color = cos2)) +
-  ggplot2::geom_hline(yintercept = 0, color = "gray80") +
-  ggplot2::geom_vline(xintercept = 0, color = "gray80") +
-  ggplot2::geom_point(size = 3) +
-  ggplot2::geom_text(ggplot2::aes(label = nom), vjust = -0.8, show.legend = FALSE) +
-  ggplot2::scale_color_gradient2(
-    low = "#d73027",
-    mid = "#fee08b",
-    high = "#1a9850",
-    midpoint = 0.5,
-    limits = c(0, 1),
-    name = "cos2 cumulé"
-  ) +
-  ggplot2::labs(
-    title = "Individus - cos2 cumulé sur les dimensions 1-2",
-    x = "Dimension 1",
-    y = "Dimension 2"
-  ) +
-  ggplot2::coord_equal() +
-  ggplot2::theme_minimal()
+fviz_pca_ind(
+  deca.acp,
+  axes = c(1, 2),
+  col.ind = "cos2",
+  invisible = "quanti.sup",
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  geom = c("point", "text"),
+  repel = TRUE,
+  labelsize = 6,
+  title = "Individus - cos² sur les dimensions 1-2"
+) +
+  ggplot2::labs(color = expression(cos^2)) +
+  theme_metropolis
 ```
 
 
@@ -599,12 +628,17 @@ ggplot2::ggplot(ind_dim12, ggplot2::aes(Dim.1, Dim.2, color = cos2)) +
 #| out-width: "100%"
 
 
-plot(
+fviz_pca_ind(
   deca.acp,
-  choix = "ind",
   axes = c(3, 4),
+  geom = c("point", "text"),
   invisible = "quanti.sup",
-)
+  col.ind = "#2e74b5",
+  repel = TRUE,
+  labelsize = 6,
+  title = "Individus - dimensions 3-4"
+) +
+  theme_metropolis
 ```
 
 
@@ -614,33 +648,19 @@ plot(
 #| echo: false
 #| out-width: "100%"
 
-ind_dim12 <- data.frame(
-  Dim.3 = deca.acp$ind$coord[, 3],
-  Dim.4 = deca.acp$ind$coord[, 4],
-  nom = rownames(deca.acp$ind$coord),
-  cos2 = rowSums(deca.acp$ind$cos2[, 3:4])
-)
-
-ggplot2::ggplot(ind_dim12, ggplot2::aes(Dim.3, Dim.4, color = cos2)) +
-  ggplot2::geom_hline(yintercept = 0, color = "gray80") +
-  ggplot2::geom_vline(xintercept = 0, color = "gray80") +
-  ggplot2::geom_point(size = 3) +
-  ggplot2::geom_text(ggplot2::aes(label = nom), vjust = -0.8, show.legend = FALSE) +
-  ggplot2::scale_color_gradient2(
-    low = "#d73027",
-    mid = "#fee08b",
-    high = "#1a9850",
-    midpoint = 0.5,
-    limits = c(0, 1),
-    name = "cos2 cumulé"
-  ) +
-  ggplot2::labs(
-    title = "Individus - cos2 cumulé sur les dimensions 3-4",
-    x = "Dimension 3",
-    y = "Dimension 4"
-  ) +
-  ggplot2::coord_equal() +
-  ggplot2::theme_minimal()
+fviz_pca_ind(
+  deca.acp,
+  axes = c(3, 4),
+  col.ind = "cos2",
+  invisible = "quanti.sup",
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  geom = c("point", "text"),
+  repel = TRUE,
+  labelsize = 6,
+  title = "Individus - cos² sur les dimensions 3-4"
+) +
+  ggplot2::labs(color = expression(cos^2)) +
+  theme_metropolis
 ```
 
 
@@ -684,12 +704,15 @@ deca.acp$var$cos2[, 1:4] |>
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_var(
   deca.acp,
-  choix = "var",
   axes = c(1, 2),
   invisible = "quanti.sup",
-)
+  col.var = "#d95f02",
+  repel = TRUE,
+  title = "Cercle des corrélations - dimensions 1-2"
+) +
+  theme_metropolis
 ```
 
 
@@ -699,12 +722,15 @@ plot(
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_var(
   deca.acp,
-  choix = "var",
   axes = c(3, 4),
   invisible = "quanti.sup",
-)
+  col.var = "#d95f02",
+  repel = TRUE,
+  title = "Cercle des corrélations - dimensions 3-4"
+) +
+  theme_metropolis
 ```
 
 
@@ -826,11 +852,15 @@ plot_ly() |>
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_var(
   deca.acp,
-  choix = "var",
   axes = c(1, 2),
-)
+  col.var = "#d95f02",
+  col.quanti.sup = "#00AFBB",
+  repel = TRUE,
+  title = "Variables actives et rang - dimensions 1-2"
+) +
+  theme_metropolis
 ```
 
 
@@ -840,11 +870,15 @@ plot(
 #| echo: false
 #| out-width: "100%"
 
-plot(
+fviz_pca_var(
   deca.acp,
-  choix = "var",
   axes = c(3, 4),
-)
+  col.var = "#d95f02",
+  col.quanti.sup = "#00AFBB",
+  repel = TRUE,
+  title = "Variables actives et rang - dimensions 3-4"
+) +
+  theme_metropolis
 ```
 
 ### Interactive plot

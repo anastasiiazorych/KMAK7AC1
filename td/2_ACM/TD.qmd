@@ -305,6 +305,22 @@ df_titanic <- df_clean[, c("Survived", "Pclass", "Sex", "Age_cat", "Embarked", "
 
 
 titanic.mca <- MCA(df_titanic, quanti.sup = 6, ncp=10, graph = FALSE)
+
+# Une couleur unique pour toutes les modalités de chaque variable active
+palette_variables <- c(
+  Survived = "#0072B2",
+  Pclass = "#D55E00",
+  Sex = "#009E73",
+  Age_cat = "#CC79A7",
+  Embarked = "#E69F00"
+)
+groupes_modalites <- factor(
+  rep(
+    names(palette_variables),
+    times = vapply(df_titanic[, names(palette_variables)], nlevels, integer(1))
+  ),
+  levels = names(palette_variables)
+)
 ```
 
 1. On affiche d’abord les résultats suivants
@@ -327,8 +343,12 @@ print_table(titanic.mca$eig[,1:3])
 ```{r}
 #| echo: false
 
+library(factoextra)
 
-plot(titanic.mca$eig[,1], cex = 1.3, cex.axis = 1.3, cex.lab = 1.3, cex.main = 1.3)
+fviz_eig(titanic.mca,
+         geom= "bar",
+         labelsize = 6,
+         addlabels = FALSE) + theme_metropolis
 ```
 
 :::
@@ -350,20 +370,21 @@ plot(titanic.mca$eig[,1], cex = 1.3, cex.axis = 1.3, cex.lab = 1.3, cex.main = 1
 #| fig-width: 8
 #| fig-height: 8
 
-plot(
+fviz_mca_biplot(
   titanic.mca,
   axes = c(1, 2),
-  choix = "ind",
+  geom.ind = "point",
+  geom.var = c("point", "text"),
+  label = "var",
   invisible = "quanti.sup",
   col.ind = "lightgrey",
-  col.var = "red",
+  col.var = groupes_modalites,
   col.quanti.sup = "blue",
-  label = "var",
-  cex = 1.3,
-  cex.axis = 1.3,
-  cex.lab = 1.3,
-  cex.main = 1.3,
-)
+  repel = TRUE,
+  pointsize = 2,
+  labelsize = 8
+) +
+  ggplot2::scale_color_manual(values = palette_variables, name = "Variable") + theme_metropolis
 
 ```
 
@@ -377,24 +398,22 @@ plot(
 #| fig-height: 8
 
 
-plot(
+fviz_mca_var(
   titanic.mca,
-    axes = c(1, 2),
-  choix = "var",               # Affiche les catégories (modalités)
-  col.var = "red",             # Modalités en rouge
+  choice = "mca.cor",
+  axes = c(1, 2),
+  col.var = names(palette_variables), # Une couleur par variable active
   col.quanti.sup = "darkblue", # Variable Fare en bleu foncé
-  cex = 1.3,
-  cex.axis = 1.3,
-  cex.lab = 1.3,
-  cex.main = 1.3,
-)
+  repel = TRUE,
+  pointsize = 2,
+  labelsize = 8
+) +
+  ggplot2::scale_color_manual(values = palette_variables, name = "Variable") + theme_metropolis
 ```
 
 :::
 
 :::
-
-
 
 ::: {.columns}
 
@@ -404,21 +423,21 @@ plot(
 #| fig-width: 8
 #| fig-height: 8
 
-plot(
+fviz_mca_biplot(
   titanic.mca,
   axes = c(2, 3),
-  choix = "ind",
+  geom.ind = "point",
+  geom.var = c("point", "text"),
+  label = "var",
   invisible = "none",
   col.ind = "lightgrey",
-  col.var = "red",
+  col.var = groupes_modalites,
   col.quanti.sup = "blue",
-  label = "var",
-  title = "ACM Titanic - Plan factoriel",
-  cex = 1.3,
-  cex.axis = 1.3,
-  cex.lab = 1.3,
-  cex.main = 1.3,
-)
+  repel = TRUE,
+  pointsize = 2,
+  labelsize = 8
+) +
+  ggplot2::scale_color_manual(values = palette_variables, name = "Variable") + theme_metropolis
 
 ```
 
@@ -426,25 +445,22 @@ plot(
 :::
 
 ::: {.column}
-
-
-
 ```{r}
 #| echo: false
 #| fig-width: 8
 #| fig-height: 8
 
-plot(
+fviz_mca_var(
   titanic.mca,
+  choice = "mca.cor",
   axes = c(2, 3),              # Axes 2 et 3
-  choix = "var",               # Affiche les catégories (modalités)
-  col.var = "red",             # Modalités en rouge
+  col.var = names(palette_variables), # Une couleur par variable active
   col.quanti.sup = "darkblue", # Variable Fare en bleu foncé
-  cex = 1.3,
-  cex.axis = 1.3,
-  cex.lab = 1.3,
-  cex.main = 1.3,
-)
+  repel = TRUE,
+  pointsize = 2,
+  labelsize = 8
+) +
+  ggplot2::scale_color_manual(values = palette_variables, name = "Variable")+ theme_metropolis
 ```
 
 :::
