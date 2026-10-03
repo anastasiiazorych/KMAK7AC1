@@ -43,7 +43,7 @@ library(tidyr)
 library(FactoMineR)
 
 
-fname <- file.path(get_script_dir(), "/data/OECD.csv")
+fname <- file.path(get_script_dir(), "data", "OECD.csv")
 df_raw <- read.csv(fname, stringsAsFactors = FALSE)
 
 ```

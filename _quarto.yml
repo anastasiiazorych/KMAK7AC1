@@ -23,8 +23,9 @@ project:
   - td/2_ACM/TD.qmd
   - td/3_AFM/TD.qmd
   - tp/index.qmd
-  - tp/markdown.qmd
-  - tp/quarto.qmd
+  - tp/0_quarto/markdown.qmd
+  - tp/0_quarto/quarto.qmd
+  - tp/1_ACP
   post-render: assets/make-pdf.sh
 
 
@@ -67,13 +68,13 @@ website:
           - text: TD 3. AFM
             href: td/3_AFM/TD.qmd
       - text: TP
-        href: tp/index.qmd
+        href: tp/1_ACP/TP.qmd
       - text: Quarto
         menu:
           - text: Markdown
-            href: tp/markdown.qmd
+            href: tp/0_quarto/markdown.qmd
           - text: Quarto
-            href: tp/quarto.qmd
+            href: tp/0_quarto/quarto.qmd
       - text: Références
         href: resources.qmd
     right:
