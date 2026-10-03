@@ -13,38 +13,532 @@ other-links:
 
 ---
 
+```{r}
+#| label: setup
+#| include: false
+source("../../R/functions.R")
+```
+
 
 
 ## Exercice 1. Données textuelles
 
 Il s'agit ici de proposer une méthodologie d'analyse textuelle pour identifier les auteurs de deux fragments de texte anonymes. On connaît pour chacun de ces fragments de texte la fréquence d'apparition de certaines lettres. On suppose également que les auteurs de ces textes appartiennent à la liste suivante d'écrivains des XVIIᵉ et XVIIIᵉ siècles : Charles Darwin, René Descartes, Thomas Hobbes, Mary Shelley et Mark Twain. Ainsi, trois échantillons de 1 000 caractères de textes de ces auteurs ont été examinés. La fréquence d'apparition de 16 lettres pour chacun de ces 15 échantillons est donnée dans un tableau de contingence.
 
-1. Récupérez les données et chargez le jeu de données dans `R` avec la commande `read.csv()`. Affichez les données.
+1. Récupérez les données [writers.csv](data/writers.csv) et chargez le jeu de données dans `R` avec la commande `read.csv()`. Affichez les données.
+
+```{r}
+library(ca)
+
+fname <- file.path(get_script_dir(), "data", "writers.csv")
+writers <- read.csv(file=fname, header = TRUE, row.names = 1)
+print_table(writers)
+```
 
 2. On considère dans un premier temps le tableau de contingence des 15 échantillons dont on connaît les auteurs. Effectuez un test du $\chi^2$ d'indépendance pour répondre à la question : les distributions des lettres sont-elles significativement différentes d'un échantillon à l'autre ? Vous pouvez utiliser la fonction `chisq.test()`.
 
-3. Effectuez une AFC avec la fonction `CA()` du package `FactoMineR` et interprétez les résultats.
+```{r}
+#| echo: false
+#| results: hide
+
+
+K <- writers[1:15,]
+chisq.test(K)
+```
+
+3. Effectuez une AFC avec la fonction `CA()` du package `FactoMineR` et interprétez les résultats. Tracez les plans factoriels 1-2 et 2-3.
+
+```{r}
+library(FactoMineR)
+
+res <- CA(K, ncp = 8, graph = FALSE)
+```
+
+```{r}
+#| echo: false
+#| out-width: "60%"
+library(factoextra)
+fviz_eig(res) + theme_metropolis
+```
+
+
+::: {.columns}
+
+::: {.column}
+
+```{r}
+#| echo: false
+
+sample_group <- factor(substr(rownames(K), 1, 2))
+
+fviz_ca_row(res,
+            axes = c(1, 2),
+            habillage = sample_group,
+            pointsize = "cos2",
+            palette = "Dark2",
+            labelsize=6,
+            repel = TRUE) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)) +
+  theme(legend.position = "bottom")
+```
+
+
+:::
+
+::: {.column}
+
+```{r}
+#| echo: false
+
+fviz_ca_row(res,
+            axes = c(3, 4),
+            habillage = sample_group,
+            pointsize = "cos2",
+            palette = "Dark2",
+            labelsize=6,
+            repel = TRUE) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)) +
+  theme(legend.position = "bottom")
+```
+
+:::
+
+:::
+
+
+::: {.columns}
+
+::: {.column}
+
+```{r}
+#| echo: false
+sample_palette <- grDevices::colorRampPalette(
+  c("#00AFBB", "#E7B800", "#FC4E07")
+)(nlevels(sample_group))
+
+fviz_ca_col(res,
+            axes = c(1, 2),
+            pointsize = "cos2",
+            col.col = "contrib",
+            gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+            labelsize=6,
+            repel = TRUE) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)) +
+  theme(legend.position = "bottom")
+```
+
+
+:::
+
+::: {.column}
+
+```{r}
+#| echo: false
+
+fviz_ca_col(res,
+            axes = c(3, 4),
+            pointsize = "cos2",
+            col.col = "contrib",
+            gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+            labelsize=6,
+            repel = TRUE) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)) +
+  theme(legend.position = "bottom")
+```
+
+
+:::
+
+:::
+
 
 4. Effectuez une AFC avec la fonction `CA()` du package `FactoMineR` en ajoutant les deux textes inconnus en lignes supplémentaires.
 
-5. Effectuez avec la fonction `hclust()` une classification ascendante hiérarchique de Ward des 17 échantillons décrits par leurs coordonnées factorielles sur les quatre premières dimensions de l'AFC. Quelle est la partition en 4 classes ?
+```{r}
+#| echo: false
+writers.pca <- CA(writers, row.sup = c(16,17), graph = FALSE)
+
+# plot(writers.pca, col.row.sup = 3)
+```
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+
+
+sample_group <- factor(substr(rownames(K), 1, 2))
+p <- fviz_ca_row(writers.pca,
+                 axes = c(1, 2),
+                 habillage = sample_group,
+                 pointsize = "cos2",
+                 palette = "Dark2",
+                 labelsize = 9,
+                 repel = TRUE)
+# Les lignes supplémentaires n'ont pas de cos2 mappé dans factoextra.
+for (i in seq_along(p$layers)) {
+  if (identical(p$layers[[i]]$aes_params$size, "cos2")) {
+    p$layers[[i]]$aes_params$size <- 2
+  }
+}
+
+fviz_ca_col(writers.pca,
+            axes = c(1, 2),
+            col.col = "#9f999e",
+            pointsize = 1,
+            labelsize = 6,
+            repel = TRUE,
+            ggp = p) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)) +
+  theme(legend.position = "bottom")
+```
+
+5. Effectuez avec la fonction `hclust()` une classification ascendante hiérarchique de Ward des 17 échantillons décrits par leurs coordonnées factorielles sur les quatre premières dimensions de l'AFC. Quelle est la partition en 4 classes ? Tracer sur le premier plan factoriel.
+
+```{r}
+#matrice des coordonnees factorielles sur 4 dimensions
+X <- rbind(res$row$coord[,1:4],res$row.sup$coord[,1:4])
+#matrice de distance euclidiennes entre les 17 echantillons
+D <- dist(X)
+#CAH
+tree <- hclust(D,method="ward.D2")
+#Dendrogramme
+plot(tree,hang=-1)
+```
+
+```{r}
+#| echo: false
+partition_4 <- cutree(tree, k = 4)
+```
+
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+
+fviz_ca_row(res,
+            axes = c(1, 2),
+            habillage = partition_4,
+            pointsize = "cos2",
+            palette = "Dark2",
+            labelsize=6,
+            repel = TRUE) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  guides(colour = guide_legend(nrow = 1, byrow = TRUE)) +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+# Matrice de confusion sur les 15 échantillons dont l'auteur est connu.
+# Les deux textes anonymes ne peuvent pas être comparés à une classe réelle.
+confusion_matrix <- table(
+  Auteur = factor(substr(rownames(K), 1, 2)),
+  Classe = partition_4[rownames(K)]
+)
+confusion_matrix
+```
 
 
 ## Exercice 2.
 
-Récupérez le jeu de données [`chiens.cvs`](). Il s'agit de données fictives où 27 races de chiens sont décrites par 7 variables qualitatives.
+Récupérez le jeu de données [`chiens.cvs`](data/chiens.csv). Il s'agit de données fictives où 27 races de chiens sont décrites par 7 variables qualitatives.
 
 1. Chargez le jeu de données `chiens.csv` dans `R`. Affichez les données. Quelle est la classe de cet objet ?
 
-2. Créez une matrice $H$ contenant la description des $n = 27$ races canines sur uniquement les $p = 6$ premières variables.
+```{r}
+fname <- file.path(get_script_dir(), "data", "chiens.csv")
+chiens <- read.csv(file=fname, header = TRUE, row.names = 1)
+
+print_table(head(chiens))
+```
+
+```{r}
+
+# Convertir les variables qualitatives en facteurs et afficher leurs modalités
+chiens[] <- lapply(chiens, factor)
+lapply(chiens, levels)
+dim(chiens)
+class(chiens)
+
+```
+
+2. Créez une matrice $H$ contenant la description des $n = 27$ races canines sur uniquement les $p = 6$ premières variables. *Indication: on pourra faire avec la fonction `subset()` *
+
+```{r}
+H <- subset(chiens,select=-fonction)
+H
+```
 
 3. On veut effectuer l'ACM de cette matrice $H$.
 
-   a. Quelle décomposition en valeurs singulières généralisée (DVSG / GSVD) faut-il faire ? Réalisez cette DVSG avec `R`.
-   b. Montrez qu'en ACM, l'inertie totale des données vaut toujours $\frac{m}{p} - 1$, où $m$ est le nombre total de modalités et $p$ le nombre de variables qualitatives. Vérifiez ensuite avec `R` que la somme des valeurs propres (ou carrés des valeurs singulières) trouvées à la question précédente vaut bien $\frac{m}{p} - 1$.
-   c. Vérifiez également que le nombre maximum de dimensions de cette ACM vaut bien $\min(n - 1, m - p)$.
+   a. Quelle décomposition en valeurs singulières généralisée (GSVD) faut-il faire ? Réalisez cette DVSG avec `R`.
+
+```{r}
+library(FactoMineR)
+K <- tab.disjonctif(H)
+#------Calcul de la matrice R ------------
+
+F <- K/sum(K) #matrice des frequences
+r<-apply(F,1,sum) #poids des lignes
+c<-apply(F,2,sum) #poids des colonnes
+
+R <- diag(1/r) %*% (F-r%*%t(c)) %*% diag(1/c)
+
+R.svd <- svd.triplet(R, r, c)
+
+U<-R.svd$U
+V<-R.svd$V
+d<-R.svd$vs
+
+```
+
+   b. Montrez qu'en ACM, l'inertie totale des données vaut toujours $\frac{J}{p} - 1$, où $J$ est le nombre total de modalités et $p$ le nombre de variables qualitatives. Vérifiez ensuite avec `R` que la somme des valeurs propres (ou carrés des valeurs singulières) trouvées à la question précédente vaut bien $\frac{J}{p} - 1$.
+```{r}
+sum(d^2) #somme des valeurs singulieres
+
+p <- ncol(H) #nb de variables qualitatives
+J <- ncol(K) #nb de modalites
+J/p-1
+
+stopifnot(isTRUE(all.equal(sum(d^2), J / p - 1)))
+```
+
+   c. Vérifiez également que le nombre maximum de dimensions de cette ACM vaut bien $\min(n - 1, J - p)$.
+```{r}
+
+#10 valeurs propres non nulles
+round(d^2,digit=3)
+
+n <- nrow(H)
+min(n-1,J-p)
+
+tol <- max(dim(R)) * max(d) * .Machine$double.eps
+stopifnot(sum(d > tol) == min(n - 1, J - p))
+```
+   
    d. Représentez dans un diagramme en barres les pourcentages d'inertie expliquée par les dimensions de l'ACM.
+
+```{r}
+#| fig-width: 8
+
+barplot(d^2/sum(d^2)*100,names.arg=1:length(d),xlab="dim",ylab="pourcentage d'inertie expliquée")   
+```
+
    e. Déterminez les matrices $X$ et $Y$ des coordonnées factorielles des races de chiens et des modalités des variables qualitatives sur les $k = 3$ premières dimensions. Modifiez les noms des lignes et des colonnes dans $X$ et $Y$ afin qu'ils soient parlants.
-   f. Faites un graphique (*plot*) des individus et des modalités dans le premier plan factoriel.
+
+```{r}
+#coordonnees factorielles des races de chiens
+X <- data.frame(U[,1:3] %*% diag(d[1:3]))
+rownames(X) <- rownames(H)
+colnames(X) <- paste("dim", 1:3, sep = "")
+
+print_table(head(X))
+```
+
+```{r}
+#coordonnees factorielles des modalités
+Y <- data.frame(V[,1:3] %*% diag(d[1:3]))
+rownames(Y) <- colnames(K)
+colnames(Y) <- paste("dim", 1:3, sep = "")
+
+print_table(head(Y))
+```
+
+   f. A parti du code suivant, faites un graphique (*plot*) des modalités dans le premier plan factoriel.
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+dim1 <- 1
+dim2 <- 2
+pourc <- round(d^2 / sum(d^2) * 100, digits = 2)
+lab.x <- paste0("Dim ", dim1, " (", pourc[dim1], " %)")
+lab.y <- paste0("Dim ", dim2, " (", pourc[dim2], " %)")
+
+individus <- data.frame(
+  nom = rownames(X),
+  x = X[[dim1]],
+  y = X[[dim2]]
+)
+
+ggplot(individus, aes(x = x, y = y, label = nom)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_point(colour = "#00AFBB", size = 2.5) +
+  geom_text_repel() +
+  coord_cartesian(
+    xlim = range(individus$x) * 1.2,
+    ylim = range(individus$y) * 1.2
+  ) +
+  labs(x = lab.x, y = lab.y) +
+  theme_minimal()
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+dim1 <- 1
+dim2 <- 2
+pourc <- round(d^2 / sum(d^2) * 100, digits = 2)
+lab.x <- paste0("Dim ", dim1, " (", pourc[dim1], " %)")
+lab.y <- paste0("Dim ", dim2, " (", pourc[dim2], " %)")
+
+modalites <- data.frame(
+  nom = rownames(Y),
+  x = Y[[dim1]],
+  y = Y[[dim2]]
+)
+
+ggplot(modalites, aes(x = x, y = y, label = nom)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_point(colour = "#d18f0b", size = 2.5) +
+  geom_text_repel() +
+  coord_cartesian(
+    xlim = range(modalites$x) * 1.2,
+    ylim = range(modalites$y) * 1.2
+  ) +
+  labs(x = lab.x, y = lab.y) +
+  theme_minimal()
+```
+
+
    g. Utilisez la relation quasi-barycentrique pour retrouver les coordonnées factorielles de la modalité `T++` à partir des coordonnées factorielles des races de chiens.
-   h. Quel est le rapport de corrélation entre la variable *taille* et la première composante principale ? Entre la variable *taille* et la seconde composante principale ?
+```{r}
+#indice des lignes des chiens T++
+which(K[,1]==1) 
+
+#moyenne des coord. fact. des chiens T++
+moy <- apply(X[which(K[,1]==1),],2,mean) 
+
+#relation quasi-barycentrique
+moy*(1/d[1:3]) 
+
+#coord. fact. de T++
+unname(Y[1,]) 
+```
+
+   h. Que calcule la fonction suivante ? <!--Quel est le rapport de corrélation entre la variable *taille* et la première composante principale ? Entre la variable *taille* et la seconde composante principale ? -->
+```{r}
+fun <- function(x, gpe) {
+moyennes <- tapply(x, gpe, mean)
+effectifs <- tapply(x, gpe, length)
+varinter <- (sum(effectifs * (moyennes - mean(x)) ^ 2))
+vartot <- (var(x) * (length(x) - 1))
+res <- varinter / vartot
+return(res)
+}
+```
+
+```{r}
+fun(X$dim1,chiens$taille)
+fun(X$dim2,chiens$taille)
+```
+
+4. On veut maintenant utiliser la fonction MCA du package FactoMineR.
+  
+  a. Faire l’ACM des données sur les races canines en mettant la variable fonction en supplémentaire.
+
+  ```{r}
+  chiens.MCA <- MCA(chiens, quali.sup = 7, graph = FALSE)
+  ```
+  
+  b. Retrouvez les résulats numériques et les graphiques de la question 2.
+```{r}
+head(X)
+head(chiens.MCA$ind$coord)
+
+head(Y)
+head(chiens.MCA$var$coord)
+```
+
+
+```{r}
+#| fig-width: 12
+#| fig-height: 9
+
+# plot(chiens.MCA, choix="ind", invisible=c("var","quali.sup"))
+fviz_mca_ind(
+  chiens.MCA,
+  pointsize = "cos2",
+  col.ind = "contrib",
+  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  labelsize=6,
+  repel = TRUE) +
+  scale_size_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.5),
+    range = c(1, 10),
+    name = expression(cos^2)
+  ) + theme_metropolis +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| fig-width: 12
+#| fig-height: 9
+
+# plot(chiens.MCA, choix="ind", invisible="ind")
+fviz_mca_var(
+  chiens.MCA,
+  choice = "var.cat",
+  repel = TRUE,
+  labelsize = 9
+) + theme_metropolis
+```
+
+c. Retrouver les rapports de corrélations entre les variables qualitatives et les deux premières composantes principales. 
+
+```{r}
+chiens.MCA$var$eta2["taille",1:2]
+```
+
+d. Faire le plot des variables en fonction de ces rapports de corrélation en utilisant la fonction `plot.MCA`.
+```{r}
+#plot(chiens.MCA,choix="var",invisible=c("ind"))
+fviz_mca_var(
+  chiens.MCA,
+  choice="var",
+  repel = TRUE,
+  labelsize=9
+) +
+  theme_metropolis
+```

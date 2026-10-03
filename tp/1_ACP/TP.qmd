@@ -5,6 +5,7 @@ author: B. Charlier, Marie Chavent
 format: 
   html:
     output-file: TP_ACP_topdf.html
+    number-sections: false
 
 other-links:
   - text: "Version PDF"
@@ -43,6 +44,7 @@ eaux <- read.table(fname, header = TRUE, row.names = 1, sep = ";")
 print_table(eaux)
 ```
 
+Ces données sont disponibles [ici](data/eaux.txt).
 
 ## Exercice 1.
 
@@ -51,7 +53,7 @@ I. Le but de cette première partie est de calculer « à la main », avec les f
 ```{r}
 #| eval: false
 
-eaux <- read.table(fname, header = TRUE, row.names = 1, sep = ";")
+eaux <- read.table("https://bcharlier.github.io/KMAK7AC1/tp/1_ACP/data/eaux.txt", header = TRUE, row.names = 1, sep = ";")
 ```
 
 
@@ -325,7 +327,7 @@ fviz_pca_ind(eaux.pca,
 
 ```
 
-# Exercice 2.
+## Exercice 2.
 
 I. On analyse maintenant le nuage des points-variables à la main. L'idée est toujours de retrouver les quantités définies dans le cours.
 

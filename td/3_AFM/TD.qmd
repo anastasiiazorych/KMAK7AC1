@@ -38,10 +38,7 @@ Auto-évaluation de l’état de santé (`HS_SFRH`), Sentiment de sécurité seu
 On souhaite comparer le vivre mieux de ces 16 pays en prenant en compte l’ensemble des 5 grands domaines de mesures du vivre mieux.
 
 ```{r}
-library(dplyr)
-library(tidyr)
-library(FactoMineR)
-
+#| code-fold: true
 
 fname <- file.path(get_script_dir(), "data", "OECD.csv")
 df_raw <- read.csv(fname, stringsAsFactors = FALSE)
@@ -49,6 +46,10 @@ df_raw <- read.csv(fname, stringsAsFactors = FALSE)
 ```
 
 ```{r}
+#| code-fold: true
+
+library(dplyr)
+library(tidyr)
 
 # Codes ISO des 16 pays de l'exercice
 codes_16 <- c("AUT", "BEL", "CAN", "FIN", "FRA", "DEU", "GRC", "HUN", "IRL", "ITA", "NLD", "NOR", "POL", "GBR", "USA", "EST")
@@ -70,7 +71,7 @@ variables_presentes <- intersect(var22, names(ocde_16))
 ocde_16 <- ocde_16 %>% 
   select(LOCATION, all_of(variables_presentes))
 
-# 3. Passer LOCATION en rownames (méthode moderne sans NULL)
+# 3. Passer LOCATION en rownames 
 ocde_16 <- ocde_16 %>% 
   tibble::column_to_rownames("LOCATION")
 
@@ -78,6 +79,8 @@ ocde_16 <- ocde_16 %>%
 
 ```{r}
 #| eval: true
+
+library(FactoMineR)
 
 ocde.mfa <- MFA(
   ocde_16,

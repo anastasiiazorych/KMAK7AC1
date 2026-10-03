@@ -9,6 +9,12 @@ filters:
   - iconify
 project:
   type: website
+  resources:
+    - td/1_ACP/data/cidre.csv
+    - td/3_AFM/data/OECD.csv 
+    - tp/1_ACP/data/eaux.txt
+    - tp/2_AFC-ACM/data/chiens.csv
+    - tp/2_AFC-ACM/data/writers.csv
   render:
   - index.qmd
   - resources.qmd
