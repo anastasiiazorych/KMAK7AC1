@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PAK_SIDECAR_PROCESS: false
 
     steps:
       - name: Check out repository
@@ -29,8 +31,7 @@ jobs:
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
-        env:
-          PAK_SIDECAR_PROCESS: false
+
         with:
           packages: |
             any::knitr
