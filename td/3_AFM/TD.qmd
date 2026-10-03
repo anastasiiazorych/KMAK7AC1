@@ -90,6 +90,16 @@ ocde.mfa <- MFA(
   graph = FALSE
 )
 
+# Palettes partagées par tous les graphiques de l'AFM.
+palette_domaines <- c(
+  Materiel = "#4DAF4A",
+  Emploi = "#e67e22",
+  Satisfaction = "#377EB8",
+  Sante_Securite = "#000000",
+  Enseignement = "#c2489d"
+)
+palette_cos2 <- c("#00AFBB", "#E7B800", "#FC4E07")
+
 ```
 
 
@@ -121,7 +131,6 @@ print_table(ocde.mfa$quanti.var$cos2[,1:2])
 #| echo: false
 #| fig-width: 12
 #| fig-height: 9
-#| out-width: "75%"
 
 
 library(factoextra)
@@ -131,7 +140,7 @@ fviz_mfa_ind(
   ocde.mfa,
   col.ind = "cos2",
   invisible= c('quali.sup', "quanti.sup"),
-  gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+  gradient.cols = palette_cos2,
   repel = TRUE,
   labelsize = 7
 ) +
@@ -150,7 +159,6 @@ theme(
 #| echo: false
 #| fig-width: 12
 #| fig-height: 9
-#| out-width: "75%"
 
 
 # Cercle des corrélations de l'ACP pondérée globale dans l'AFM
@@ -158,7 +166,7 @@ fviz_mfa_var(
   ocde.mfa,
   repel = TRUE,
   choice = "quanti.var", # Affiche les corrélations des variables quantitatives
-  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  palette = palette_domaines,
   legend.title = "Groupe",
   title = "Cercle des corrélations de l'AFM",
   labelsize = 7
@@ -182,19 +190,24 @@ Faîtes une première interprétation des individus et des variables dans ce pla
 ```{r}
 #| echo: false
 #| fig-width: 12
-#| fig-height: 8
-#| out.width: "75%"
+#| fig-height: 9
 
 
-plot.MFA(
+
+fviz_mfa_var(
   ocde.mfa,
-  choix = "group",
-  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
-  graph.type = "ggplot",
+  choice = "group",
+  repel = TRUE,
+  col.var = names(palette_domaines),
+  palette = palette_domaines,
   legend.title = "Groupe",
-  cex = 1.4
-) +
-  theme_metropolis
+  labelsize = 9
+) + 
+theme_metropolis +
+theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.05, 0.02),
+    legend.justification = c("left", "bottom"))
 
 ```
 
@@ -224,7 +237,6 @@ ocde.mfa$inertia.ratio[1:2]
 #| echo: false
 #| fig-width: 12
 #| fig-height: 9
-#| out.width: "75%"
 
 
 library(factoextra)
@@ -232,10 +244,12 @@ library(factoextra)
 p <- fviz_mfa_ind(
   ocde.mfa,
   partial = c("FRA", "CAN", "GRC"),
- palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
+  col.partial = "group",
   repel = TRUE,
-  labelsize = 6
+  labelsize = 9
 ) + theme_metropolis + 
+  scale_colour_manual(values = palette_domaines, name = "Domaine") +
+  scale_linetype_discrete(name = "Domaine") +
 theme(
     legend.position = "inside",
     legend.position.inside = c(0.02, 0.02),
@@ -303,9 +317,10 @@ axes_1_2 <- grep("Dim1|Dim2", rownames(ocde.mfa$partial.axes$coord), value = TRU
 fviz_mfa_axes(
   ocde.mfa,
   select.axes = list(name = axes_1_2),  # Sélectionne uniquement Dim.1 et Dim.2
-  palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),                 
+  palette = palette_domaines,
   repel = TRUE,
-  legend.title = "Domaines"
+  legend.title = "Domaines",
+  labelsize=9
 ) +
   labs(
     title = "Cercle des axes partiels (Dimensions 1 et 2)",
