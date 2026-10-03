@@ -1,0 +1,50 @@
+---
+title: "TP 2 -- Analyse Factorielle des Correspondences"
+author: B. Charlier, Marie Chavent
+
+format: 
+  html:
+    output-file: TP_AFC-ACM_topdf.html
+
+other-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "TP_AFC-ACM.pdf"
+
+---
+
+
+
+## Exercice 1. Données textuelles
+
+Il s'agit ici de proposer une méthodologie d'analyse textuelle pour identifier les auteurs de deux fragments de texte anonymes. On connaît pour chacun de ces fragments de texte la fréquence d'apparition de certaines lettres. On suppose également que les auteurs de ces textes appartiennent à la liste suivante d'écrivains des XVIIᵉ et XVIIIᵉ siècles : Charles Darwin, René Descartes, Thomas Hobbes, Mary Shelley et Mark Twain. Ainsi, trois échantillons de 1 000 caractères de textes de ces auteurs ont été examinés. La fréquence d'apparition de 16 lettres pour chacun de ces 15 échantillons est donnée dans un tableau de contingence.
+
+1. Récupérez les données et chargez le jeu de données dans `R` avec la commande `read.csv()`. Affichez les données.
+
+2. On considère dans un premier temps le tableau de contingence des 15 échantillons dont on connaît les auteurs. Effectuez un test du $\chi^2$ d'indépendance pour répondre à la question : les distributions des lettres sont-elles significativement différentes d'un échantillon à l'autre ? Vous pouvez utiliser la fonction `chisq.test()`.
+
+3. Effectuez une AFC avec la fonction `CA()` du package `FactoMineR` et interprétez les résultats.
+
+4. Effectuez une AFC avec la fonction `CA()` du package `FactoMineR` en ajoutant les deux textes inconnus en lignes supplémentaires.
+
+5. Effectuez avec la fonction `hclust()` une classification ascendante hiérarchique de Ward des 17 échantillons décrits par leurs coordonnées factorielles sur les quatre premières dimensions de l'AFC. Quelle est la partition en 4 classes ?
+
+
+## Exercice 2.
+
+Récupérez le jeu de données [`chiens.cvs`](). Il s'agit de données fictives où 27 races de chiens sont décrites par 7 variables qualitatives.
+
+1. Chargez le jeu de données `chiens.csv` dans `R`. Affichez les données. Quelle est la classe de cet objet ?
+
+2. Créez une matrice $H$ contenant la description des $n = 27$ races canines sur uniquement les $p = 6$ premières variables.
+
+3. On veut effectuer l'ACM de cette matrice $H$.
+
+   a. Quelle décomposition en valeurs singulières généralisée (DVSG / GSVD) faut-il faire ? Réalisez cette DVSG avec `R`.
+   b. Montrez qu'en ACM, l'inertie totale des données vaut toujours $\frac{m}{p} - 1$, où $m$ est le nombre total de modalités et $p$ le nombre de variables qualitatives. Vérifiez ensuite avec `R` que la somme des valeurs propres (ou carrés des valeurs singulières) trouvées à la question précédente vaut bien $\frac{m}{p} - 1$.
+   c. Vérifiez également que le nombre maximum de dimensions de cette ACM vaut bien $\min(n - 1, m - p)$.
+   d. Représentez dans un diagramme en barres les pourcentages d'inertie expliquée par les dimensions de l'ACM.
+   e. Déterminez les matrices $X$ et $Y$ des coordonnées factorielles des races de chiens et des modalités des variables qualitatives sur les $k = 3$ premières dimensions. Modifiez les noms des lignes et des colonnes dans $X$ et $Y$ afin qu'ils soient parlants.
+   f. Faites un graphique (*plot*) des individus et des modalités dans le premier plan factoriel.
+   g. Utilisez la relation quasi-barycentrique pour retrouver les coordonnées factorielles de la modalité `T++` à partir des coordonnées factorielles des races de chiens.
+   h. Quel est le rapport de corrélation entre la variable *taille* et la première composante principale ? Entre la variable *taille* et la seconde composante principale ?
