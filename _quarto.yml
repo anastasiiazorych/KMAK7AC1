@@ -44,10 +44,38 @@ website:
     background: primary
     search: true
     left:
-      - sidebar:Cours
-      - sidebar:TD
-      - sidebar:TP
-      - sidebar:Quarto
+      - text: Cours
+        menu:
+          - text: Introduction
+            href: cours/presentation.qmd
+          - text: Décomposition en valeurs singulières
+            href: cours/SVD.qmd
+          - text: Analyse en composantes principales
+            href: cours/ACP.qmd
+          - text: Analyse factorielle des correspondances
+            href: cours/AFC.qmd
+          - text: Analyse des correspondances multiples
+            href: cours/ACM.qmd
+          - text: Analyse factorielle multiple
+            href: cours/AFM.qmd
+      - text: TD
+        menu:
+          - text: TD 1. ACP
+            href: td/1_ACP/TD.qmd
+          - text: TD 2. AFC/ACM
+            href: td/2_ACM/TD.qmd
+          - text: TD 3. AFM
+            href: td/3_AFM/TD.qmd
+      - text: TP
+        href: tp/index.qmd
+      - text: Quarto
+        menu:
+          - text: Markdown
+            href: tp/markdown.qmd
+          - text: Quarto
+            href: tp/quarto.qmd
+      - text: Références
+        href: resources.qmd
     right:
       - text: "{{<iconify simple-icons:moodle title='Moodle'>}}"
         href: https://moodle.utoulouse.fr/
@@ -55,46 +83,13 @@ website:
       - text: "{{< iconify simple-icons:github title='GitHub'>}}"
         href: https://github.com/bcharlier/KMAK7AC1
         aria-label: GitHub
-  sidebar:
-
-    - id: Cours
-      collapse-level: 3
-      contents: 
-        - cours/presentation.qmd
-        - cours/SVD.qmd
-        - cours/ACP.qmd
-        - cours/AFC.qmd
-        - cours/ACM.qmd
-        - cours/AFM.qmd
-
-    - id: TD
-      collapse-level: 3
-      contents:
-        - td/1_ACP/TD.qmd
-        - td/2_ACM/TD.qmd
-        - td/3_AFM/TD.qmd
-    
-    - id: TP
-      collapse-level: 3
-      contents:
-        - tp/index.qmd
-    
-    - id: Quarto
-      collapse-level: 2
-      contents:
-        - tp/markdown.qmd
-        - tp/quarto.qmd
-    
-    - id: Réferences
-      contents:
-        - resources.qmd
-
-
 format:
   html:
     theme: 
       - lux
       - assets/custom.scss
+    grid:
+      body-width: 1100px
     css:
       - assets/table.css
       - assets/print-clean.css
@@ -102,7 +97,7 @@ format:
       - assets/unfold-panel.html
     html-math-method: katex
     number-sections: true
-    toc-depth: 3
+    
     code-fold: false
     code-tools:
       toggle: false
@@ -113,8 +108,9 @@ format:
     reference-location: margin
     citation-location: margin
     from: markdown+emoji
+    toc: false
     #toc-location: right
-    #toc: true
+    #toc-depth: 3
 
   revealjs:
     theme: assets/metropolis.scss
