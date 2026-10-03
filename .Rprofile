@@ -6,4 +6,6 @@ if (file.exists(local_python)) {
   Sys.unsetenv("RETICULATE_PYTHON")
 }
 
-source(file.path(getwd(), "R", "functions.R"))
+if (Sys.getenv("R_PKG_PKG_WORKER") != "true") {
+  source(file.path(getwd(), "R", "functions.R"))
+}
