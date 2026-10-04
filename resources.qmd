@@ -18,6 +18,10 @@ format: html
 - [RStudio Desktop](https://posit.co/download/rstudio-desktop/) for writing and running R.
 - [Quarto](https://quarto.org/) for reproducible documents and this course site.
 
+## Datasets
+
+- https://r-packages.io/datasets
+- https://www.data.gouv.fr/
 
 ## References
 

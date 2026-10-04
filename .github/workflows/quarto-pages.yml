@@ -43,6 +43,8 @@ jobs:
             any::ca
             any::RColorBrewer
             any::svglite
+            any::ggdendro
+            any::patchwork
 
       - name: Set up Python
         uses: actions/setup-python@v5
