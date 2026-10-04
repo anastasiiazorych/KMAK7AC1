@@ -24,10 +24,12 @@ project:
   - cours/AFC.qmd
   - cours/ACM.qmd
   - cours/AFM.qmd
+  - cours/Clustering.qmd
   - cours/presentation.qmd
   - td/1_ACP/TD.qmd
   - td/2_ACM/TD.qmd
   - td/3_AFM/TD.qmd
+  - td/4_Clustering/TD.qmd
   - tp/index.qmd
   - tp/0_quarto/markdown.qmd
   - tp/0_quarto/quarto.qmd
@@ -67,6 +69,8 @@ website:
             href: cours/ACM.qmd
           - text: Analyse factorielle multiple
             href: cours/AFM.qmd
+          - text: Clustering
+            href: cours/Clustering.qmd
       - text: TD
         menu:
           - text: TD 1. ACP
@@ -75,6 +79,8 @@ website:
             href: td/2_ACM/TD.qmd
           - text: TD 3. AFM
             href: td/3_AFM/TD.qmd
+          - text: TD 4. Clustering
+            href: td/4_Clustering/TD.qmd
       - text: TP
         menu:
           - text: TP 1. ACP
@@ -129,8 +135,7 @@ format:
     theme: assets/metropolis.scss
     css: assets/table.css
     default-image-extension: svg
-    html-math-method:
-      method: katex
+    html-math-method: katex
     width: 1024
     height: 768
     slide-level: 2
@@ -153,4 +158,4 @@ knitr:
     prompt: true
     message: false
     warning: false
-    dev: svglite
+    dev: svg

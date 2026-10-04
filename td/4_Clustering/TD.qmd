@@ -1,0 +1,194 @@
+---
+title: "TD 4 -- Classification Ascendante Hiérarchique & $K$-means"
+
+format: 
+  html:
+    output-file: TD_AFM_topdf.html
+
+other-links:
+  - text: "Version PDF"
+    icon: file-pdf
+    href: "TD_AFM.pdf"
+---
+
+```{r}
+#| label: setup
+#| include: false
+source("../../R/functions.R")
+```
+
+
+## Exercice 1. 
+
+On reprend le jeu de données du Décastar du TD 1.
+
+```{r}
+#| echo: false
+
+
+library(FactoMineR)
+
+# Charger le jeu de données dans R
+data(decathlon) 
+
+# Ne conserver que la compétition Décastar
+decastar = decathlon[decathlon$Competition == 'Decastar', ]
+# Supprimer la colonne « Competition », désormais inutile
+decastar = decastar[ , colnames(decastar) != 'Competition']
+
+print_table(decastar, max.col.width = "3.5em")
+```
+
+1. Pourquoi une CAH est-elle préférable à l'algorithme des $K$-means dans ce contexte ?
+
+2. On effectue d’abord une CAH à l'aide de la fonction `HCPC` sur les 10 épreuves (centrées-réduites), en utilisant la distance euclidienne, puis on trace le dendrogramme associé.
+
+```{r}
+#| echo: false
+
+decastar_normalized <- as.data.frame(
+  scale(decastar[, 1:10], center = TRUE, scale = TRUE)
+)
+
+# 1. On effectue la CAH avec HCPC (graph = FALSE évite l'affichage automatique par défaut)
+# Par défaut, HCPC centre-réduit les données et utilise la distance euclidienne avec la méthode de Ward.
+res_hcpc <- HCPC(decastar_normalized, nb.clust = -1, metric = "euclidean", method = "ward", graph.scale = "inertia", graph = FALSE)
+```
+
+
+```{r}
+#| echo: false
+#| fig-width: 14
+#| fig-height: 10
+#| out-width: "75%"
+library(factoextra)
+
+# 2. Plot du dendrogramme avec factoextra
+p <- fviz_dend(
+  res_hcpc, 
+  k = NULL,                     # Nombre de classes souhaité (ou ajuster selon le gain d'inertie)
+  cex = 0.7,
+  color_labels_by_k = FALSE, # Garde les étiquettes monochromes
+  rect = FALSE,               # Ajoute des rectangles autour des groupes
+  rect_fill = FALSE,          # Remplit la couleur des rectangles avec transparence
+  #rect_border = "grey50",
+  palette = "black",
+  horiz = FALSE,
+  xlim = c(-.6, 14),
+  ylim = c(-1, 2.2),
+  main = "Dendrogramme de la CAH - Décastar",
+  xlab = "Athlètes",
+  ylab = "Distance / inertie"
+)
+
+# Les noms des athlètes sont un calque geom_text, pas des étiquettes d'axe.
+label_layer <- which(vapply(p$layers, function(layer) {
+  inherits(layer$geom, "GeomText")
+}, logical(1)))
+for (i in label_layer) {
+  p$layers[[i]]$mapping$angle <- NULL
+  p$layers[[i]]$aes_params$angle <- 45
+  p$layers[[i]]$aes_params$hjust <- 1
+  p$layers[[i]]$aes_params$size <- 8
+}
+
+p + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 16),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 15))
+
+```
+
+ Que représente l'axe des ordonnées sur cette représentation graphique ? En se basant uniquement sur l'examen du dendrogramme, combien de classes paraît-il naturel de conserver ?
+
+3. Que représente concrètement ce graphique ? En vous appuyant sur cette représentation, combien de classes paraît-il opportun de retenir ?
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+#| out-width: "50%"
+# plot(gains_df, choice="bar")
+# Gains d'inertie inter-classes lors des fusions successives
+gains_inertie <- res_hcpc$call$t$inert.gain
+gains_df <- data.frame(
+  niveau = factor(
+    paste(seq_along(gains_inertie), seq_along(gains_inertie) + 1, sep = " → "),
+    levels = paste(seq_along(gains_inertie), seq_along(gains_inertie) + 1, sep = " → ")
+  ),
+  inertie = gains_inertie
+)
+
+ggplot2::ggplot(gains_df, ggplot2::aes(x = niveau, y = inertie, group = 1)) +
+  ggplot2::geom_col(fill = "#00AFBB", width = 0.75) +
+  ggplot2::labs(
+    title = "",
+    x = "Nombre de classes fusionnées",
+    y = "Gain d'inertie inter-classes"
+  ) +
+  theme_metropolis +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+```
+
+4. On retient une partition en 3 classes. Les individus sont représentés sur le premier plan factoriel de l'ACP. Commentez ce graphique.
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+#| out-width: "75%"
+# Partition en trois classes telle que calculée par HCPC et utilisée dans le dendrogramme
+partition_3 <- factor(res_hcpc$data.clust$clust)
+names(partition_3) <- rownames(res_hcpc$data.clust)
+
+# ACP des 10 épreuves pour représenter les individus
+deca.acp <- PCA(decastar_normalized, graph = FALSE)
+
+fviz_pca_ind(
+  deca.acp,
+  habillage = partition_3[rownames(decastar_normalized)],
+  palette = "Dark2",
+  repel = TRUE,
+  labelsize = 8
+) +
+  labs(title = "Décastar : partition HCPC à partir des données normalisées") +
+  theme_metropolis +
+  theme(legend.position = "bottom")
+```
+
+5. On rappelle ci-dessous le tableau des valeurs propres associées à l'ACP.
+
+```{r}
+print_table(deca.acp$eig)
+```
+Si on souhaitait refaire la CAH mais après réduction de dimension, combien de directions principales proposeriez
+vous de conserver ? Commentez le fraph ce-dessous.
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 9
+#| out-width: "75%"
+
+
+# ACP des 10 épreuves pour représenter les individus
+deca.acp <- PCA(decastar, ncp=5, graph = FALSE)
+# Partition en trois classes telle que calculée par HCPC et utilisée dans le dendrogramme
+partition_3_acp <- HCPC(deca.acp, nb.clust = 3, graph = FALSE)
+
+fviz_pca_ind(
+  deca.acp,
+  habillage = factor(partition_3_acp$data.clust$clust),
+  palette = "Dark2",
+  repel = TRUE,
+  labelsize = 8
+) +
+  labs(title = "Décastar : partition HCPC à partir de l'ACP dim 5") +
+  theme_metropolis +
+  theme(legend.position = "bottom")
+```
+
+

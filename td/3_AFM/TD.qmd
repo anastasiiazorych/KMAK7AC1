@@ -78,17 +78,7 @@ ocde_16 <- ocde_16 %>%
 ```
 
 ```{r}
-#| eval: true
-
-library(FactoMineR)
-
-ocde.mfa <- MFA(
-  ocde_16,
-  group = c(5, 5, 3, 6, 3),
-  type = rep("s", 5),
-  name.group = c("Materiel", "Emploi", "Satisfaction", "Sante_Securite", "Enseignement"),
-  graph = FALSE
-)
+#| echo: false
 
 # Palettes partagées par tous les graphiques de l'AFM.
 palette_domaines <- c(
@@ -100,6 +90,20 @@ palette_domaines <- c(
 )
 palette_cos2 <- c("#00AFBB", "#E7B800", "#FC4E07")
 
+```
+
+```{r}
+#| eval: true
+
+library(FactoMineR)
+
+ocde.mfa <- MFA(
+  ocde_16,
+  group = c(5, 5, 3, 6, 3),
+  type = rep("s", 5),
+  name.group = c("Materiel", "Emploi", "Satisfaction", "Sante_Securite", "Enseignement"),
+  graph = FALSE
+)
 ```
 
 
