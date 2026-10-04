@@ -86,14 +86,26 @@ On est rapidement limité
 ### Nuage 2D
 ```{r}
 #| echo: false
-#| fig-width: 6
-#| fig-height: 4
+#| fig-width: 4
+#| fig-height: 3
+
+library(ggplot2)
 
 set.seed(123)
 n <- 80 
-x  <- rnorm(n)
-y <- 0.7*x + rnorm(n, sd = 0.7)
-plot(x, y, pch = 19, xlab = "Variable 1", ylab = "Variable 2", main = "Nuage des individus dans R²")
+df <- data.frame(
+  x = rnorm(n)
+)
+df$y <- 0.7 * df$x + rnorm(n, sd = 0.7)
+
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(size = 2) +
+  labs(
+    title = expression("Nuage des individus dans " ~ R^2),
+    x = "Variable 1",
+    y = "Variable 2"
+  ) +
+  theme_minimal()
 ```
 
 
@@ -415,10 +427,6 @@ On part d’un nuage qui vit dans $\mathbb R^2$, et on veut une image approchée
 
 ```{r}
 #| echo: false
-#| fig-width: 7
-#| fig-height: 5
-#| out-width: "760px"
-
 
 library(plotly)
 
@@ -517,8 +525,8 @@ steps <- lapply(seq_along(angles), function(i) {
 
 fig %>%
 layout(
-  width = 760,
-  height = 520,
+  width = 800,
+  height = 600,
   autosize = FALSE,
 
   title = list(
@@ -578,9 +586,6 @@ soit maximale, où $H_i$ est le projeté orthogonal de l'individu $X_{i,:}$ sur 
 
 ```{r}
 #| echo: false
-#| fig-width: 6
-#| fig-height: 6
-#| out-width: "100%"
 
 library(plotly)
 
@@ -848,8 +853,8 @@ steps <- list(
 
 fig %>%
   layout(
-    width = 760,
-    height = 520,
+    width = 800,
+    height = 600,
     autosize = FALSE,
 
     title = list(
@@ -989,7 +994,6 @@ temperature <- read.csv(
   header = TRUE,
   sep = ";",
   row.names = 1,
-  fileEncoding = "latin1"
 )
 
 ```
@@ -1049,9 +1053,12 @@ print_table(
 
 ```{r}
 #| echo: false
+#| fig-width: 4
+#| fig-height: 3 
 
 library(FactoMineR)
-library(ggplot2)
+library(factoextra)
+
 
 acp <- PCA(
   temperature,
@@ -1061,20 +1068,7 @@ acp <- PCA(
   graph = FALSE
 )
 
-eig <- data.frame(
-  axe = 1:nrow(acp$eig),
-  valeur_propre = acp$eig[, 1],
-  variance = acp$eig[, 2]
-)
-
-ggplot(eig, aes(x = axe, y = valeur_propre, group = 1)) +
-  geom_line() +
-  geom_point(size = 3) +
-  labs(
-    x = "Composante principale",
-    y = "Valeur propre"
-  ) +
-  theme_minimal(base_size = 16)
+fviz_eig(acp, addlabels = TRUE)
 ```
 
 On cherche à
@@ -1109,6 +1103,12 @@ $$
 #| fig-width: 10
 #| fig-height: 5
 #| out-width: "100%"
+
+eig <- data.frame(
+  axe = 1:nrow(acp$eig),
+  valeur_propre = acp$eig[, 1],
+  variance = acp$eig[, 2]
+)
 
 eig$cum_variance <- cumsum(eig$variance)
 
@@ -1233,8 +1233,7 @@ Représentation du nuage de points par rapport aux 2 premières composantes prin
 ```{r}
 #| echo: false
 #| fig-width: 12
-#| fig-height: 7
-#| out-width: "100%"
+#| fig-height: 9
 
 ind <- as.data.frame(acp$ind$coord)
 ind$ville <- rownames(ind)

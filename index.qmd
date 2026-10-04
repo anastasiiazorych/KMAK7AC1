@@ -50,10 +50,10 @@ Compétences acquises
 | 25/09 | CM/TD | AFC/ACM |
 | 28/09 | CM/TD | ACM |
 | 30/09 | CM/TD | AFM |
-| 05/10 | CM/TD | Apprentissage non supervisé |
-| 07/10 | CM/TD | Apprentissage non supervisé |
-| 07/10 | TP1 * 2 | |
-| 12/10 | CM/TD | Apprentissage non supervisé |
-| 14/10 | TP2 * 2 | |
-| 21/10 | CM/TD | Apprentissage non supervisé |
-| 21/10 | TP3 * 2 | |
+| 05/10 | CM/TD | AFM/ACM |
+| 06/10 | TP1 * 2 | ACP|
+| 07/10 | CM/TD | ACM |
+| 12/10 | CM/TD | Clustering + CC |
+| 14/10 | TP2 * 2 | AFC/ACM |
+| 21/10 | CM/TD | Clustering |
+| 21/10 | TP3 * 2 | Clustering |
