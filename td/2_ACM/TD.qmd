@@ -502,3 +502,29 @@ print_table(
 Quelle tendance semble se dégager ?
 
 4. Synthétiser votre analyse en quelques lignes.
+
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+fviz_mca_biplot(
+  titanic.mca,
+  axes = c(1, 2),
+  geom.ind = "point",
+  geom.var = c("point", "text"),
+  label = "var",
+  invisible = "quanti.sup",
+  col.ind = "lightgrey",
+  col.var = groupes_modalites,
+  col.quanti.sup = "blue",
+  repel = TRUE,
+  pointsize = 2,
+  labelsize = 8,
+  select.var = list(cos2 = 6)
+) +
+  ggplot2::scale_color_manual(values = palette_variables, name = "Variable") +
+  labs(title = "Modalités les mieux représentées (cos²)") +
+  theme_metropolis
+```

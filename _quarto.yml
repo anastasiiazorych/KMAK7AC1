@@ -134,7 +134,7 @@ format:
   revealjs:
     theme: assets/metropolis.scss
     css: assets/table.css
-    default-image-extension: svg
+    # default-image-extension: svg
     html-math-method: katex
     width: 1024
     height: 768
@@ -158,4 +158,4 @@ knitr:
     prompt: true
     message: false
     warning: false
-    dev: svg
+    # dev: svg
