@@ -12,6 +12,8 @@ other-links:
     icon: file-pdf
     href: "TP_ACP.pdf"
 
+params:
+  correction: false
 ---
 
 
@@ -61,8 +63,7 @@ eaux <- read.table("https://bcharlier.github.io/KMAK7AC1/tp/1_ACP/data/eaux.txt"
   1. Calculez la matrice des corrélations $R$ à partir de la matrice des données centrées-réduites $Z$, en pondérant les lignes par $1/n$. *Indication : définir un vecteur `moy` et un vecteur `ecartype` qui contiennent respectivement la moyenne et l'écart-type biaisé des colonnes de la matrice $X$ des données. Utiliser ensuite la fonction `scale()` pour normaliser les données. Voir aussi : `?mean`, `?sd` et `?apply`.*
   
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
 
 ######Importation du tableau de données######
 
@@ -87,7 +88,6 @@ R <- t(Z) %*% N %*% Z
 ```
 
 ```{r}
-#| eval: true
 
 round(unname(Z[,]), 3)
 N
@@ -99,8 +99,7 @@ round(unname(R), 3)
   2. Effectuez la décomposition spectrale de $R$ et déduisez-en la matrice $V$ des vecteurs propres de $R$ triés par ordre décroissant des valeurs propres. Vérifiez que les vecteurs propres sont bien normés à 1 et orthogonaux (i.e., orthonormés).
   *Indication : utiliser la fonction `eigen()` de `R`. Voir donc `?eigen`.*
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
 
 ######Décomposition spéctrale avec la fonction eigen()######
 
@@ -118,8 +117,7 @@ sum(e$values)
   Calculez les moyennes et les variances des trois colonnes de $\psi$. Comparez-les aux valeurs propres de $R$.
 
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
 
 
 ######Matrice des coordonnées factorielles des individus (des scores)######
@@ -132,16 +130,13 @@ e$values
 ```
 
 ```{r}
-#| eval: true
-
 round(unname(Psi), 3)
 ```
 
   4. Représentez graphiquement les 5 eaux sur le premier plan factoriel (1-2) des individus et sur le plan (1-3).
 
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
 
 ######Matrice des coordonnées factorielles des individus (des scores)######
 Psi<-Z%*%e$vectors
@@ -151,8 +146,7 @@ e$values
 ```
 
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
 
 
 ######Représentation graphique sur les plans factoriels des individus######
@@ -166,7 +160,8 @@ text(Psi[,2:3],rownames(X))
 ```
 
 ```{r}
-#| echo: false
+#| include: !expr params$correction
+
 
 library(ggplot2)
 
@@ -198,8 +193,7 @@ gridExtra::grid.arrange(plot_12, plot_23, ncol = 2)
   5. Quelle est l'inertie du nuage des 5 eaux calculée à partir des coordonnées factorielles $\psi$ ? Vérifiez que $I(\psi) = p = I(Z)$.
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
 
 ######Inerties######
 sum(e$values) # Inertie totale du nuage des 5 eaux minérales
@@ -209,8 +203,7 @@ sum(e$values) # Inertie totale du nuage des 5 eaux minérales
   - Quel est le pourcentage d'inertie expliquée par chaque composante principale ? Quel est le pourcentage cumulé ? Combien de composantes retiendriez-vous ?
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
 
 e$values / p * 100 # Pourcentages d'inertie expliquée par chaque composante
 ```
@@ -220,8 +213,8 @@ II. On va maintenant calculer l'ACP avec `R` et le package `FactoMineR` :
   1. Les deux fonctions de base sous `R` qui réalisent des ACP sont `prcomp()` et `princomp()`. En vous aidant de l'aide, retrouvez les résultats du I et en particulier la matrice $\Psi$ et les valeurs propres.
 
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
+
 ######ACP avec les fonction prcomp() et prcomp()######
 ?prcomp
 res<-prcomp(X,center=TRUE,scale.=TRUE)
@@ -231,8 +224,9 @@ res$x
 
 
 ```{r}
-#| echo: false
-#| results: hide
+#| include: !expr params$correction
+
+
 ?princomp
 res<-princomp(X, cor = TRUE)
 res$sdev^2 #racines des valeurs propres donc au carré. 
@@ -327,6 +321,15 @@ fviz_pca_ind(eaux.pca,
 
 ```
 
+
+
+
+
+
+
+
+
+
 ## Exercice 2.
 
 I. On analyse maintenant le nuage des points-variables à la main. L'idée est toujours de retrouver les quantités définies dans le cours.
@@ -335,8 +338,7 @@ I. On analyse maintenant le nuage des points-variables à la main. L'idée est t
   1. Calculez la matrice des produits scalaires des 5 eaux $NZZ^\top$ avec $N = \operatorname{Diag}(\tfrac{1}{n}, \dots, \tfrac{1}{n})$.
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
 
 N<-diag(rep(1/n,n))
 PS<-Z%*%t(Z)%*%N
@@ -346,8 +348,7 @@ PS<-Z%*%t(Z)%*%N
   2. Effectuez la décomposition spectrale de cette matrice et déduisez-en la matrice $U$ de ses vecteurs propres, triés par ordre décroissant des valeurs propres et $N$-normés. Comparez ces valeurs propres à celles de la matrice des corrélations $R$, puis vérifiez que $U$ est bien $N$-orthonormée.
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
 
 ######Décomposition spéctrale avec la fonction eigen()######
 e<-eigen(PS)
@@ -361,8 +362,7 @@ t(e$vectors)%*%e$vectors #les vecteurs propres sont bien orhonormés
   3. Calculez la matrice $\varphi$ des coordonnées factorielles des 3 variables sur les trois axes factoriels. Représentez graphiquement les 3 variables sur le premier plan factoriel (1-2).
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
 
 ######Matrice des coordonnées factorielles des variables (les loadings)######
 Phi<-t(Z)%*%N%*%U
@@ -374,7 +374,7 @@ round(unname(Phi), 3)
 ```
 
 ```{r}
-#| echo: false
+#| include: !expr params$correction
 
 ######Représentation graphique sur les plans factoriels des variables######
 par(mfrow=c(1,2))
@@ -386,13 +386,12 @@ text(Phi[,2:3],colnames(X))
 
 ```
 
-  4. Effectuez la décomposition en valeurs singulières (SVD) de $Z$ avec les métriques $I_p$ et $N$ (fonction `svd.triplet()`).
+  4. Effectuez la décomposition en valeurs singulières (SVD) de $Z$ avec les métriques $I_p$ et $N$. *Indication: on pourra utiliser la fonction `FactoMineR::svd.triplet()`.*
 
   - Vérifiez que les valeurs singulières sont bien les racines des valeurs propres déjà trouvées. Retrouvez, à partir de cette SVD, les matrices $U$ et $V$ (déjà trouvées aux questions précédentes).
 ```{r}
-#| results: hide
-#| echo: false
-#| 
+#| include: !expr params$correction
+
 ###### SVD Vanilla ######
 svd_vanilla<-svd(N^0.5%*%Z)
 
@@ -401,13 +400,13 @@ e$values
 ```
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
+
 ###### SVD weighted ######
 
 ?svd.triplet()
-row.w<-rep(1/n,n)
-col.w<-rep(1,p)
+row.w<-rep(1/n, n)
+col.w<-rep(1, p)
 svd_weighted<-svd.triplet(Z,row.w,col.w)
 
 svd_weighted$vs^2 #on retrouve bien les valeurs propres
@@ -419,8 +418,8 @@ e$values
   - Vérifiez les formules de passage $\psi_{:\alpha} = \sqrt{\lambda_\alpha} u_\alpha$ et $\varphi_{:\alpha} = \sqrt{\lambda_\alpha} v_\alpha$.
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
+
 ###### SVD Vanilla ######
 
 U<-sqrt(n)*svd_vanilla$u
@@ -434,8 +433,8 @@ unname(Phi)
 ```
 
 ```{r}
-#| results: hide
-#| echo: false
+#| include: !expr params$correction
+
 ###### SVD weighted ######
 
 U<-svd_weighted$U
@@ -452,9 +451,7 @@ unname(Phi)
   - Calculez la corrélation entre l'intensité des bulles et la première composante principale $\psi_{:1}$. Vérifiez que vous retrouvez bien $\varphi_{11}$.
 
 ```{r}
-#| results: hide
-#| echo: false
-
+#| include: !expr params$correction
 
 Phi[1,1]
 cor(X[,1],Psi[,1]) #corrélations composantes-variables
@@ -467,9 +464,7 @@ II. Avec `R` et le package `FactoMineR` :
   2. Retrouvez ensuite $\varphi$ avec la fonction `FactoMineR::PCA()`.
 
 ```{r}
-#| results: hide
-#| echo: false
-
+#| include: !expr params$correction
 
 eaux.pca$var$coord
 Phi
