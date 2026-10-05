@@ -19,23 +19,19 @@ source("../../R/functions.R")
 
 ## Exercice 1.
 
-On considère des données fournies par l’OCDE sur des indicateurs de vivre mieux (voir le site de l’OCDE). Les données concernent 16 pays. On donne 22 indicateurs qui peuvent être répartis dans 5 grands domaines permettant
-de mesurer le "vivre mieux" :
+On considère des données fournies par l'OCDE sur des indicateurs du « vivre mieux » ([voir le site de l'OCDE](https://www.oecd.org/fr/data/tools/well-being-data-monitor/better-life-index.html)). On se concentre sur les données de 16 pays concernant 22 indicateurs qui peuvent être répartis dans cinq grands domaines permettant de mesurer le « vivre mieux » :
 
-- Bien-être matériel : Logements sans équipements sanitaires de base (`HO_BASE`), Coût du logement (`HO_HISH`), Nombre de pièces par personne (`HO_NUMR`), Revenu disponible des ménages (`IW_HADI`), Patrimoine financier des ménages (`IW_HNFW`) ;
+- *Bien-être matériel :* logements sans équipements sanitaires de base (`HO_BASE`), coût du logement (`HO_HISH`), nombre de pièces par personne (`HO_NUMR`), revenu disponible des ménages (`IW_HADI`), patrimoine financier des ménages (`IW_HNFW`) ;
 
-- Emploi : Taux d’emploi (`JE_EMPL`), Insécurité de l’emploi (`JE_LMIS`), Taux de chômage de longue durée (`JE_LTUR`), Revenus moyens d’activité (`JE_PEARN`), Horaires de travail lourds (`WL_EWLH`) ;
+- *Emploi :* taux d'emploi (`JE_EMPL`), insécurité de l'emploi (`JE_LMIS`), taux de chômage de longue durée (`JE_LTUR`), revenus moyens d'activité (`JE_PEARN`), horaires de travail lourds (`WL_EWLH`) ;
 
-- Satisfaction : Qualité du réseau social (`SC_SNTWS`), Satisfaction à l’égard de la vie (`SW_LIFS`), Temps consacré
-aux loisirs et à soi (`WL_TNOW`)
+- *Satisfaction :* qualité du réseau social (`SC_SNTWS`), satisfaction à l'égard de la vie (`SW_LIFS`), temps consacré aux loisirs et à soi (`WL_TNOW`) ;
 
-- Santé et sécurité : Pollution atmosphérique (`EQ_AIRP`), Qualité de l’eau (`EQ_WATER`), Espérance de vie (`HS_LEB`),
-Auto-évaluation de l’état de santé (`HS_SFRH`), Sentiment de sécurité seul la nuit (`PS_FSAFEN`), Taux d’homicides
-(`PS_REPH`)
+- *Santé et sécurité :* pollution atmosphérique (`EQ_AIRP`), qualité de l'eau (`EQ_WATER`), espérance de vie (`HS_LEB`), auto-évaluation de l'état de santé (`HS_SFRH`), sentiment de sécurité seul la nuit (`PS_FSAFEN`), taux d'homicides (`PS_REPH`) ;
 
-- Enseignement : Niveau d’instruction (`ES_EDUA`), Compétences des élèves (`ES_STCS`), Années de scolarité(`ES_EDUEX`)
+- *Enseignement :* niveau d'instruction (`ES_EDUA`), compétences des élèves (`ES_STCS`), années de scolarité (`ES_EDUEX`).
 
-On souhaite comparer le vivre mieux de ces 16 pays en prenant en compte l’ensemble des 5 grands domaines de mesures du vivre mieux.
+On souhaite comparer le « vivre mieux » de ces 16 pays en prenant en compte l'ensemble des cinq grands domaines de mesure du « vivre mieux ».
 
 ```{r}
 #| code-fold: true
@@ -191,6 +187,13 @@ Faîtes une première interprétation des individus et des variables dans ce pla
 
 3. On va à présent comparer les 5 groupes de variables, en commençant par les représenter dans le 1er plan principal, ainsi que les coefficients $\mathcal{L}_g$ et $RV$.
 
+
+::: {.columns}
+
+::: {.column}
+
+
+
 ```{r}
 #| echo: false
 #| fig-width: 12
@@ -215,18 +218,28 @@ theme(
 
 ```
 
+:::
 
+::: {.column}
 ```{r}
-print_table(ocde.mfa$group$Lg['MFA',1:5, drop=FALSE],  max.col.width ="7em")
+print_table(diag(ocde.mfa$group$Lg[1:5,1:5]),  max.col.width ="7em")
 ```
 ```{r}
 print_table(ocde.mfa$group$RV,  max.col.width ="7em")
 ```
 
+
+
+:::
+
+:::
+
+
+
   (a) À quoi correspondent les coordonnées associées à chaque groupe sur le graphique de gauche ?
   (b) Rappeler ce que calculent les coefficients $\mathcal{L}_g$ et $RV$ et interpréter les résultats.
 
-4. On s’intéresse aux inerties axiales, en commençant par le calcul des ratios d’inerties des 2 premières directions
+<!-- 4. On s’intéresse aux inerties axiales, en commençant par le calcul des ratios d’inerties des 2 premières directions
 
 ```{r}
 ocde.mfa$inertia.ratio[1:2]
@@ -234,7 +247,7 @@ ocde.mfa$inertia.ratio[1:2]
 
   (a) Rappeler les inerties constituant ces ratios.
   (b) Que pourrait-on dire à partir de ces mesures ?
-
+-->
 5. On fait apparaître les points partiels associés au Canada, la France et la Grèce :
 
 ```{r}
@@ -262,8 +275,9 @@ theme(
 # 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
 for (i in seq_along(p$layers)) {
   if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
-    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
-    p$layers[[i]]$aes_params$linewidth <- 1.2
+    p$layers[[i]]$aes_params$linetype <- "11"
+    p$layers[[i]]$aes_params$lineend <- "round"
+    p$layers[[i]]$aes_params$linewidth <- 2
   }
 }
 

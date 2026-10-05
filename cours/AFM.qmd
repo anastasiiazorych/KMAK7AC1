@@ -935,7 +935,7 @@ plot.MFA(
   choix = "var",
   invisible = c("quanti.sup", "quali.sup"),
   palette = c("#4DAF4A","#e67e22", "#377EB8", "#000000", "#c2489d"),
-  select=grep("sucre|acide", rownames(vins.mfa$quanti.var$coord), ignore.case = TRUE, value = FALSE),
+  select=grep("sucre|acide|passion", rownames(vins.mfa$quanti.var$coord), ignore.case = TRUE, value = FALSE),
   unselect=.9,
   graph.type = "ggplot",
   legend.title = "Groupe",
@@ -1084,7 +1084,7 @@ $$0 \le \mathcal{L}_g(k,v_1) =  \frac{I_k(v)}{\lambda_1^{(k)}} \le 1$$
 
 
 
-## Représentation des groupes
+## Représentation des groupes {#sec-axes}
 
 
 ::: {.columns}
@@ -1143,8 +1143,8 @@ cat("Somme des coord des groupes (Axes 1-2) :", colSums(inertie_groupe_dim12), "
 
 :::
 
-- 1ère dimension commune aux 3 groupes
-- 2ème dimension liée surtout au groupe Expert
+- 1ère dimension commune aux 3 groupes (abscisses proches de 1)
+- 2ème dimension liée surtout au groupe Expert 
 
 
 ## Similarité entre groupes
@@ -1350,7 +1350,7 @@ $$
 
 ::: {.columns}
 
-::: {.column width="75%"}
+::: {.column width="65%"}
 
 ```{r}
 #| echo: false
@@ -1369,13 +1369,15 @@ p <- fviz_mfa_ind(
     "Consommateur" = "#000000"
   ),
   repel = TRUE,
-  labelsize = 5
+  labelsize = 6
 ) + theme_metropolis
 
 # 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
 for (i in seq_along(p$layers)) {
   if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
-    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
+    p$layers[[i]]$aes_params$linetype <- "11"
+    p$layers[[i]]$aes_params$lineend <- "round"
+    p$layers[[i]]$aes_params$linewidth <- 1.5
   }
 }
 
@@ -1385,12 +1387,10 @@ p
 
 :::
 
-::: {.column width="25%"}
+::: {.column width="35%"}
 
-On projette les individus partiels
-dans le plan principal, et on
-observe leur position par rapport
-aux individus associés :
+On projette les individus partiels supplémentaires^[Un facteur d'échelle de $K$ doit être appliqué pour garantir que l'individu est le barycentre de ses individus partiels] dans le plan principal, et on
+observe leur position par rapportaux individus associés :
 
 - `V Aub Silex` a été jugé bien plus extrêmes par `Conso` que par `Expert`, relativement à la première direction ;
 
@@ -1449,8 +1449,9 @@ p <- fviz_mfa_ind(
 # 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
 for (i in seq_along(p$layers)) {
   if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
-    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
-    p$layers[[i]]$aes_params$linewidth <- 1
+    p$layers[[i]]$aes_params$linetype <- "11"
+    p$layers[[i]]$aes_params$lineend <- "round"
+    p$layers[[i]]$aes_params$linewidth <- 1.5
   }
 }
 
@@ -1521,8 +1522,9 @@ p <- fviz_mfa_ind(
 # 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
 for (i in seq_along(p$layers)) {
   if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
-    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
-    p$layers[[i]]$aes_params$linewidth <- 1.2
+    p$layers[[i]]$aes_params$linetype <- "11"
+    p$layers[[i]]$aes_params$lineend <- "round"
+    p$layers[[i]]$aes_params$linewidth <- 1.5
   }
 }
 
@@ -1582,8 +1584,9 @@ p <- fviz_mfa_ind(
 # 2. Forcer le style en pointillés ("dotted") ou tirets ("dashed") sur les segments
 for (i in seq_along(p$layers)) {
   if (inherits(p$layers[[i]]$geom, "GeomSegment")) {
-    p$layers[[i]]$aes_params$linetype <- "dashed" # ou "dashed"
-    p$layers[[i]]$aes_params$linewidth <- 1.2
+    p$layers[[i]]$aes_params$linetype <- "11"
+    p$layers[[i]]$aes_params$lineend <- "round"
+    p$layers[[i]]$aes_params$linewidth <- 1.5
   }
 }
 
@@ -1612,8 +1615,42 @@ print_table(vins.mfa$ind$within.partial.inertia[ids, 1:2])
 
 :::
 
-
 :::
+
+## AFM vs ACPs séparées
+
+Comment comparer l’AFM (= ACP globale pondérée) avec les ACPs de chacun des groupes ?
+
+**Projection des composantes principales :** On met en œuvre une méthode similaire à celle des individus partiels :
+ - On effectue pour chaque groupe une ACP classique ;
+ - On extrait les (premières) composantes principales des ACPs ;
+ - On projette ces composantes en tant que variable supplémentaire
+
+## Exemple
+```{r}
+#| echo: false
+
+axes <- grep("Dim1|Dim2", rownames(vins.mfa$partial.axes$coord), value = TRUE)
+axes_actifs_1_2 <- axes[!grepl("Cepage|Cépage|Préférence|Preference", axes)]
+
+fviz_mfa_axes(
+  vins.mfa,
+  axes = c(1, 2),
+  select.axes = list(name = axes_actifs_1_2),
+  repel = TRUE,
+  palette = c(
+    "Expert" = "#e67e22",
+    "Étudiant" = "#377EB8",
+    "Consommateur" = "#000000"
+  ),
+  invisible = c("quanti.sup", "group.sup"),
+  title = "Graphe des axes partiels des ACP séparées"
+)
+```
+
+- Les 2 premières directions du groupe `Etudiant` coincident avec celle de l’AFM (voir @sec-axes)
+- Les 2 premières directions des deux autres groupes sont bien représentées dans le 1er plan de l’AFM.
+
 
 # Aide à l’interprétation
 
