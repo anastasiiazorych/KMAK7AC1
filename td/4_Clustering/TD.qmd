@@ -152,6 +152,7 @@ fviz_pca_ind(
   habillage = partition_3[rownames(decastar_normalized)],
   palette = "Dark2",
   repel = TRUE,
+  mean.point = FALSE,
   labelsize = 8
 ) +
   labs(title = "Décastar : partition HCPC à partir des données normalisées") +
@@ -183,6 +184,7 @@ fviz_pca_ind(
   deca.acp,
   habillage = factor(partition_3_acp$data.clust$clust),
   palette = "Dark2",
+  mean.point = FALSE,
   repel = TRUE,
   labelsize = 8
 ) +

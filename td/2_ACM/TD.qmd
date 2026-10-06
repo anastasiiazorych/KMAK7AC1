@@ -379,6 +379,7 @@ fviz_mca_biplot(
   invisible = "quanti.sup",
   col.ind = "lightgrey",
   col.var = groupes_modalites,
+  mean.point = FALSE,
   col.quanti.sup = "blue",
   repel = TRUE,
   pointsize = 2,
@@ -433,6 +434,7 @@ fviz_mca_biplot(
   col.ind = "lightgrey",
   col.var = groupes_modalites,
   col.quanti.sup = "blue",
+  mean.point = FALSE,
   repel = TRUE,
   pointsize = 2,
   labelsize = 8
@@ -522,6 +524,7 @@ fviz_mca_biplot(
   repel = TRUE,
   pointsize = 2,
   labelsize = 8,
+  mean.point = FALSE,
   select.var = list(cos2 = 6)
 ) +
   ggplot2::scale_color_manual(values = palette_variables, name = "Variable") +

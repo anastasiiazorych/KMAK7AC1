@@ -1512,6 +1512,7 @@ library(factoextra)
 p <- fviz_mfa_ind(
   vins.mfa,
   partial = c("V Aub Silex  "),
+  col.partial = "group",
   palette = c(
     "Expert" = "#e67e22",
     "Étudiant" = "#377EB8",
@@ -1574,6 +1575,7 @@ library(factoextra)
 p <- fviz_mfa_ind(
   vins.mfa,
   partial = c("S Michaud  "),
+  col.partial = "group",
   palette = c(
     "Expert" = "#e67e22",
     "Étudiant" = "#377EB8",
