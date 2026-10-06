@@ -522,6 +522,7 @@ fviz_mca_biplot(
   repel = TRUE,
   pointsize = 2,
   labelsize = 8,
+  mean.point = FALSE,
   select.var = list(cos2 = 6)
 ) +
   ggplot2::scale_color_manual(values = palette_variables, name = "Variable") +
