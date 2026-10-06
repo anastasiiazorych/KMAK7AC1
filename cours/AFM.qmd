@@ -1068,14 +1068,14 @@ $$\begin{aligned}v_1 &= \operatorname*{argmax}_{\|v\|=1} \sum_{k=1}^K \sum_{j=1}
 #### Propriété de borne supérieure (Équilibre inter-groupes)
 Soit $I_k(v) = \sum_{j=1}^{J_k} \text{cov}^2(v, x_{:, (k,j)})$ définie pour tout $v\in\mathbb{R}^J$ tel que $\|v\|=1$. L'inertie du groupe $k$ projetée sur la direction $v$, est 
 
-$$0 \le \mathcal{L}_g(k,v_1) =  \frac{I_k(v)}{\lambda_1^{(k)}} \le 1$$
+$$0 \le \mathcal{L}_g(k,v) =  \frac{I_k(v)}{\lambda_1^{(k)}} \le 1$$
 :::
 
 - Interprétations, 
 
   <!-- - Par définition de la valeur propre maximale $\lambda_1^{(k)}$ du groupe $k$, l'inertie projetée sur n'importe quel axe $v$ ne peut jamais dépasser $\lambda_1^{(k)}$, et on a bien  $\mathcal{L}_g(k,v_1) \in [0, 1]$ -->
-  - $\mathcal{L}_g(k,v_1) = 0$ si toutes les variables du groupe $k$ sont non-corrélées à $v_1$
-  - $\mathcal{L}_g(k,v_1)= 1$ si $v_1$ correspond à la 1ère composante principale du groupe $k$.
+  - $\mathcal{L}_g(k,v) = 0$ si toutes les variables du groupe $k$ sont non-corrélées à $v$
+  - $\mathcal{L}_g(k,v)= 1$ si $v$ correspond à la 1ère composante principale du groupe $k$.
 
 - Conséquences :
 
