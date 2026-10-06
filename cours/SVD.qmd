@@ -100,14 +100,14 @@ avec $\alpha=4\lambda_1\lambda_2$.
 
 ## SVD réduite
 
-Partons de $X=U\Sigma V^\top$. En ne gardant que les $r=\operatorname{rank}(X)$ valeurs singulières non nulles,
+Partons de $X=U\Sigma V^\top$. En ne gardant que les $r=\operatorname{rang}(X)$ valeurs singulières non nulles,
 
 $$\boxed{X=\sum_{i=1}^r s_i u_i v_i^\top
 =U_r\operatorname{diag}(s_1,\ldots,s_r)V_r^\top}.$$
 
 Les matrices $u_i v_i^\top$ sont de rang $1$. Les $u_i$ et les $v_i$ sont orthonormés et engendrent respectivement les espaces des colonnes et des lignes de $X$ :
 
-$$\operatorname{span}(x_1,\ldots,x_p)=\operatorname{span}(u_1,\ldots,u_r).$$
+$$\operatorname{Vect}(x_1,\ldots,x_p)=\operatorname{Vect}(u_1,\ldots,u_r).$$
 
 ## SVD réduite : visualisation
 
