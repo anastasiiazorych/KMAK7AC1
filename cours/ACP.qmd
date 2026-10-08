@@ -1131,7 +1131,7 @@ ggplot(eig, aes(x = axe, y = cum_variance, group = 1)) +
 **Méthode pratique:** ne retenir que les dimensions que l’on peut interpréter...
 
 **Méthode de Kaiser:** Ne retenir que les directions principales qui expliquent
-une proportion de l’inertie supérieure à $\frac{1}{p}$. Dans l’exemple : cela correspond à $q = 1$. Mais mieux vaut couper avant/apres un décrochement...
+une proportion de l’inertie supérieure à $\frac{1}{p}$. Dans l’exemple : cela correspond à $q = 1$. 
 
 
 ## Combien d'axes conserver ?
